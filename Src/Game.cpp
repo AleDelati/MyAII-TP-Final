@@ -34,7 +34,7 @@ void Game::SetZoom() {
 
 void Game::InitPhysics() {
 	// Inicializamos el mundo con la gravedad por defecto
-	phyWorld = new b2World(b2Vec2(0.0f, 9.8f));
+	phyWorld = new b2World(b2Vec2(0.0f, 9.8f * 1));
 
 	// Creamos el renderer de debug y le seteamos las banderas para que dibuje TODO
 	debugRender = new SFMLRenderer(wnd);
@@ -47,7 +47,7 @@ void Game::InitPhysics() {
 
 	// Crea la Caja
 	bdy_Box = Box2DHelper::CreateRectangularDynamicBody(phyWorld, 3, 3, 1.0f, 0.3f, 0.1f);
-	bdy_Box->SetTransform(b2Vec2(50.0f, 50.0f), 0.0f);
+	bdy_Box->SetTransform(b2Vec2(90.0f, 50.0f), 0.0f);
 
 	// Crea el cañon
 	canonWheel = Box2DHelper::CreateCircularStaticBody(phyWorld, 2.0f);
@@ -58,6 +58,10 @@ void Game::InitPhysics() {
 
 	canon = Box2DHelper::CreateRectangularStaticBody(phyWorld, 9, 3);
 	canon->SetTransform(b2Vec2(11.0f, 90.0f), 0.0f);
+
+	// Crea los Ragdolls
+	rag_1 = new Ragdoll(phyWorld, Vector2f(25.0f, 50.0f), 0);
+	rag_2 = new Ragdoll(phyWorld, Vector2f(75.0f, 50.0f), 0);
 }
 
 void Game::InitSprites() {

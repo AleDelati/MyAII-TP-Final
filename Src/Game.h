@@ -3,6 +3,7 @@
 #include <SFML/System.hpp>
 #include "SFMLRenderer.h"
 #include "Actor.h"
+#include "Ragdoll.h"
 #include <list>
 
 using namespace sf;
@@ -34,6 +35,10 @@ class Game {
 		b2Body* canonWheel;
 		b2Body* canonBase;
 		b2Body* canon;
+
+		// Ragdolls
+		Ragdoll* rag_1;
+		Ragdoll* rag_2;
 
 		//					-| Texturas y Sprites |-
 
