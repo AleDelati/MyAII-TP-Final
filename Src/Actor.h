@@ -8,16 +8,17 @@ class Actor {
 
 public:
 	
-	Actor(b2Body* body, Sprite sprite);
+	Actor(b2Body* body, RectangleShape* fig);
 	void Draw(RenderWindow& wnd);
 
 	float rad2deg(float rad);
 
 private:
 
-	Sprite spr_actor;
 	b2Body* bdy_actor;
+	RectangleShape* fig_actor;
 
+	b2AABB dimensions;
 	b2Vec2 position;
 
 };

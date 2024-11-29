@@ -14,7 +14,6 @@ Game::Game(int ancho, int alto, std::string titulo) {
 	SetZoom();
 	InitPhysics();
 	InitSprites();
-	InitActors();
 
 }
 
@@ -27,27 +26,23 @@ Game::~Game(void) {
 void Game::SetZoom() {
 	View camara;
 	// Posicion del view
-	camara.setSize(100.0f, 100.0f);
+	camara.setSize(15.0f, 15.0f);
 	camara.setCenter(50.0f, 50.0f);
 	wnd->setView(camara); //asignamos la camara
 }
 
 void Game::InitPhysics() {
 	// Inicializamos el mundo con la gravedad por defecto
-	phyWorld = new b2World(b2Vec2(0.0f, 9.8f * 1));
+	phyWorld = new b2World(b2Vec2(0.0f, 9.8f * 0));
 
 	// Creamos el renderer de debug y le seteamos las banderas para que dibuje TODO
 	debugRender = new SFMLRenderer(wnd);
 	debugRender->SetFlags(UINT_MAX);
-	phyWorld->SetDebugDraw(debugRender);
+	//phyWorld->SetDebugDraw(debugRender);
 
 	// Crea el piso
 	groundBody = Box2DHelper::CreateRectangularStaticBody(phyWorld, 100, 10);
 	groundBody->SetTransform(b2Vec2(50.0f, 100.0f), 0.0f);
-
-	// Crea la Caja
-	bdy_Box = Box2DHelper::CreateRectangularDynamicBody(phyWorld, 3, 3, 1.0f, 0.3f, 0.1f);
-	bdy_Box->SetTransform(b2Vec2(90.0f, 50.0f), 0.0f);
 
 	// Crea el cañon
 	canonWheel = Box2DHelper::CreateCircularStaticBody(phyWorld, 2.0f);
@@ -59,9 +54,9 @@ void Game::InitPhysics() {
 	canon = Box2DHelper::CreateRectangularStaticBody(phyWorld, 9, 3);
 	canon->SetTransform(b2Vec2(11.0f, 90.0f), 0.0f);
 
-	// Crea los Ragdolls
-	rag_1 = new Ragdoll(phyWorld, Vector2f(25.0f, 50.0f), 0);
-	rag_2 = new Ragdoll(phyWorld, Vector2f(75.0f, 50.0f), 0);
+	// Ragdoll
+	rag_1 = new Ragdoll(phyWorld, Vector2f(50.0f, 50.0f), 0);
+	
 }
 
 void Game::InitSprites() {
@@ -71,15 +66,11 @@ void Game::InitSprites() {
 	spr_ground.setTexture(txt_ground);
 	spr_ground.setOrigin({ txt_ground.getSize().x / 2.0f, txt_ground.getSize().y / 2.0f });
 
-	txt_box.loadFromFile("Sprites/Box.png");
-	spr_box.setTexture(txt_box);
-	spr_box.setOrigin({ txt_box.getSize().x / 2.0f, txt_box.getSize().y / 2.0f });
-
 }
 
 void Game::InitActors() {
 
-	act_Box = new Actor(bdy_Box, spr_box);
+
 
 }
 
@@ -107,7 +98,7 @@ void Game::DrawGame() {
 	wnd->draw(spr_ground);
 	spr_ground.setPosition(groundBody->GetPosition().x, groundBody->GetPosition().y);
 
-	act_Box->Draw(*wnd);
+	rag_1->Draw(*wnd);
 
 }
 
