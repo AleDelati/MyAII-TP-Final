@@ -15,6 +15,7 @@ public:
 	void Draw(RenderWindow& wnd);
 
 	// Aux
+	b2Vec2 GetPosition();
 	void SetUpSprite(b2Body* body, Sprite& spr);
 	float deg2rad(float deg);
 	float rad2deg(float rad);

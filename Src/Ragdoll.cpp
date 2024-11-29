@@ -11,17 +11,17 @@ Ragdoll::Ragdoll(b2World *world, Vector2f pos, float angle) {
 	Head = Box2DHelper::CreateRectangularDynamicBody(world, 0.5, 0.5, 1, 1, 0.25);
 	Head->SetTransform(Torso->GetWorldCenter() + b2Vec2(0, -1.35), Torso->GetAngle());
 	//Brazo Izquierdo
-	LeftArm = Box2DHelper::CreateRectangularDynamicBody(world, 1, 0.3, 1, 1, 0.25);
-	LeftArm->SetTransform(Torso->GetWorldCenter() + b2Vec2(-0.75, -0.5), Torso->GetAngle() + deg2rad(90));
+	LeftArm = Box2DHelper::CreateRectangularDynamicBody(world, .5, 0.3, 1, 1, 0.25);
+	LeftArm->SetTransform(Torso->GetWorldCenter() + b2Vec2(-0.87, -0.83), Torso->GetAngle());
 
-	LowLeftArm = Box2DHelper::CreateRectangularDynamicBody(world, 1, 0.3, 1, 1, 0.25);
-	LowLeftArm->SetTransform(Torso->GetWorldCenter() + b2Vec2(-0.75, 0.58), Torso->GetAngle() + deg2rad(90));
+	LowLeftArm = Box2DHelper::CreateRectangularDynamicBody(world, .75, 0.3, 1, 1, 0.25);
+	LowLeftArm->SetTransform(Torso->GetWorldCenter() + b2Vec2(-1.6, -0.83), Torso->GetAngle());
 	//Brazo Derecho
-	RightArm = Box2DHelper::CreateRectangularDynamicBody(world, 1, 0.3, 1, 1, 0.25);
-	RightArm->SetTransform(Torso->GetWorldCenter() + b2Vec2(0.75, -0.5), Torso->GetAngle() + deg2rad(90));
+	RightArm = Box2DHelper::CreateRectangularDynamicBody(world, .5, 0.3, 1, 1, 0.25);
+	RightArm->SetTransform(Torso->GetWorldCenter() + b2Vec2(0.87, -0.83), Torso->GetAngle());
 
-	LowRightArm = Box2DHelper::CreateRectangularDynamicBody(world, 1, 0.3, 1, 1, 0.25);
-	LowRightArm->SetTransform(Torso->GetWorldCenter() + b2Vec2(0.75, 0.58), Torso->GetAngle() + deg2rad(90));
+	LowRightArm = Box2DHelper::CreateRectangularDynamicBody(world, .75, 0.3, 1, 1, 0.25);
+	LowRightArm->SetTransform(Torso->GetWorldCenter() + b2Vec2(1.6, -0.83), Torso->GetAngle());
 	//Pierna Izquierda
 	LeftLeg = Box2DHelper::CreateRectangularDynamicBody(world, 0.4, 1.5, 1, 1, 0.25);
 	LeftLeg->SetTransform(Torso->GetWorldCenter() + b2Vec2(-0.3, 1.85), Torso->GetAngle() + deg2rad(0));
@@ -39,36 +39,36 @@ Ragdoll::Ragdoll(b2World *world, Vector2f pos, float angle) {
 	InitSprites();
 
 	//Crea los Joints entre las partes del ragdoll
-	/*
-	//Torso - Cabeza
-	Box2DHelper::CreateDistanceJoint(world, Torso, Torso->GetWorldCenter() + (b2Vec2(0, -1)), Head, Head->GetWorldCenter(),
-		0.5, 1, 1);
 	
+	//Torso - Cabeza
+		Box2DHelper::CreateDistanceJoint(world, Torso, Torso->GetWorldCenter() + (b2Vec2(0, -1.0f)), Head, Head->GetWorldCenter() + b2Vec2(0.f, .25f),
+		1.0f, 1.0f, 1.0f);
+
 	//Torzo - Brazo Izquierdo
 	Box2DHelper::CreateDistanceJoint(world, Torso, Torso->GetWorldCenter() + (b2Vec2(-0.5, -1)), LeftArm,
-		LeftArm->GetWorldCenter() + (b2Vec2(0.5, 0)), 50, 1, 1);
+		LeftArm->GetWorldCenter() + (b2Vec2(0.25, 0)), 1.0f, 1.0f, 1.0f);
 
-	Box2DHelper::CreateDistanceJoint(world, LeftArm, LeftArm->GetWorldCenter() + (b2Vec2(-0.5, 0)), LowLeftArm,
-		LowLeftArm->GetWorldCenter() + (b2Vec2(0.5, 0)), 50, 1, 1);
+	Box2DHelper::CreateDistanceJoint(world, LeftArm, LeftArm->GetWorldCenter() + (b2Vec2(-0.25, 0)), LowLeftArm,
+		LowLeftArm->GetWorldCenter() + (b2Vec2(0.375, 0)), 1.0f, 1.0f, 1.0f);
 	//Torso - Brazo Derecho
-	Box2DHelper::CreateDistanceJoint(world, Torso, Torso->GetWorldCenter() + (b2Vec2(5, -1)), RightArm,
-		RightArm->GetWorldCenter() + (b2Vec2(-0.5, 0)), 50, 1, 1);
+	Box2DHelper::CreateDistanceJoint(world, Torso, Torso->GetWorldCenter() + (b2Vec2(0.5, -1)), RightArm,
+		RightArm->GetWorldCenter() + (b2Vec2(-0.25, 0)), 1.0f, 1.0f, 1.0f);
 
-	Box2DHelper::CreateDistanceJoint(world, RightArm, RightArm->GetWorldCenter() + (b2Vec2(0.5, 0)), LowRightArm,
-		LowRightArm->GetWorldCenter() + (b2Vec2(-0.5, 0)), 50, 1, 1);
+	Box2DHelper::CreateDistanceJoint(world, RightArm, RightArm->GetWorldCenter() + (b2Vec2(0.25, 0)), LowRightArm,
+		LowRightArm->GetWorldCenter() + (b2Vec2(-0.375, 0)), 1.0f, 1.0f, 1.0f);
+
 	//Torso - Pierna Izquierda
 	Box2DHelper::CreateDistanceJoint(world, Torso, Torso->GetWorldCenter() + (b2Vec2(-0.3, 1)), LeftLeg,
-		LeftLeg->GetWorldCenter() + (b2Vec2(0, -0.75)), 50, 1, 1);
+		LeftLeg->GetWorldCenter() + (b2Vec2(0, -0.75)), 1.0f, 1.0f, 1.0f);
 
 	Box2DHelper::CreateDistanceJoint(world, LeftLeg, LeftLeg->GetWorldCenter() + (b2Vec2(0, 0.75)), LowLeftLeg,
-		LowLeftLeg->GetWorldCenter() + (b2Vec2(0, -0.75)), 50, 1, 1);
+		LowLeftLeg->GetWorldCenter() + (b2Vec2(0, -0.75)), 1.0f, 1.0f, 1.0f);
 	//Torso - Pierna Derecha
 	Box2DHelper::CreateDistanceJoint(world, Torso, Torso->GetWorldCenter() + (b2Vec2(0.3, 1)), RightLeg,
-		RightLeg->GetWorldCenter() + (b2Vec2(0, -0.75)), 50, 1, 1);
+		RightLeg->GetWorldCenter() + (b2Vec2(0, -0.75)), 1.0f, 1.0f, 1.0f);
 
 	Box2DHelper::CreateDistanceJoint(world, RightLeg, RightLeg->GetWorldCenter() + (b2Vec2(0, 0.75)), LowRightLeg,
-		LowRightLeg->GetWorldCenter() + (b2Vec2(0, -0.75)), 50, 1, 1);
-		*/
+		LowRightLeg->GetWorldCenter() + (b2Vec2(0, -0.75)), 1.0f, 1.0f, 1.0f);
 }
 
 void Ragdoll::InitSprites() {
@@ -99,44 +99,57 @@ void Ragdoll::InitSprites() {
 
 	SetUpSprite(LowRightLeg, Spr_LowRightLeg);
 
-
 }
 
 void Ragdoll::Draw(RenderWindow& wnd) {
 
 	Spr_Torso.setPosition(Torso->GetPosition().x, Torso->GetPosition().y);
+	Spr_Torso.setRotation(rad2deg(Torso->GetAngle()));
 	wnd.draw(Spr_Torso);
 
 	Spr_Head.setPosition(Head->GetPosition().x, Head->GetPosition().y);
+	Spr_Head.setRotation(rad2deg(Head->GetAngle()));
 	wnd.draw(Spr_Head);
 
 	Spr_LeftArm.setPosition(LeftArm->GetPosition().x, LeftArm->GetPosition().y);
+	Spr_LeftArm.setRotation(rad2deg(LeftArm->GetAngle()));
 	wnd.draw(Spr_LeftArm);
 
 	Spr_LowLeftArm.setPosition(LowLeftArm->GetPosition().x, LowLeftArm->GetPosition().y);
+	Spr_LowLeftArm.setRotation(rad2deg(LowLeftArm->GetAngle()));
 	wnd.draw(Spr_LowLeftArm);
 
 	Spr_RightArm.setPosition(RightArm->GetPosition().x, RightArm->GetPosition().y);
+	Spr_RightArm.setRotation(rad2deg(RightArm->GetAngle()));
 	wnd.draw(Spr_RightArm);
 
 	Spr_LowRightArm.setPosition(LowRightArm->GetPosition().x, LowRightArm->GetPosition().y);
+	Spr_LowRightArm.setRotation(rad2deg(LowRightArm->GetAngle()));
 	wnd.draw(Spr_LowRightArm);
 
 	Spr_LeftLeg.setPosition(LeftLeg->GetPosition().x, LeftLeg->GetPosition().y);
+	Spr_LeftLeg.setRotation(rad2deg(LeftLeg->GetAngle()));
 	wnd.draw(Spr_LeftLeg);
 
 	Spr_LowLeftLeg.setPosition(LowLeftLeg->GetPosition().x, LowLeftLeg->GetPosition().y);
+	Spr_LowLeftLeg.setRotation(rad2deg(LowLeftLeg->GetAngle()));
 	wnd.draw(Spr_LowLeftLeg);
 
 	Spr_RightLeg.setPosition(RightLeg->GetPosition().x, RightLeg->GetPosition().y);
+	Spr_RightLeg.setRotation(rad2deg(RightLeg->GetAngle()));
 	wnd.draw(Spr_RightLeg);
 
 	Spr_LowRightLeg.setPosition(LowRightLeg->GetPosition().x, LowRightLeg->GetPosition().y);
+	Spr_LowRightLeg.setRotation(rad2deg(LowRightLeg->GetAngle()));
 	wnd.draw(Spr_LowRightLeg);
 
 }
 
 // Aux
+
+b2Vec2 Ragdoll::GetPosition() {
+	return Torso->GetPosition();
+}
 
 void Ragdoll::SetUpSprite(b2Body* body, Sprite& spr) {
 

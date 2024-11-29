@@ -2,7 +2,6 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
 #include "SFMLRenderer.h"
-#include "Actor.h"
 #include "Ragdoll.h"
 #include <list>
 
@@ -15,10 +14,12 @@ class Game {
 		RenderWindow *wnd;
 		Color clearColor;
 
+		bool pause, toggleZoom;
 		float fps, frameTime, time_2;
 		Clock* clock_1;
 		Time* time_1;
 
+		View camera;
 		//					-| Box2D |-
 
 		b2World* phyWorld;
@@ -47,10 +48,9 @@ class Game {
 		Game(int ancho, int alto,std::string titulo);
 		~Game(void);
 
-		void SetZoom();
+		void InitCamera();
 		void InitPhysics();
 		void InitSprites();
-		void InitActors();
 
 		// Main game loop
 		void Loop();
@@ -58,7 +58,11 @@ class Game {
 		void UpdatePhysics();
 		void CheckCollitions();
 		void DoEvents();
+		void UpdateCamera();
 
+		//Aux
+		void SetZoom(Vector2f zoom);
+		void UpdateCameraPos(b2Vec2 pos);
 		float deg2rad(float deg);
 		float rad2deg(float rad);
 		

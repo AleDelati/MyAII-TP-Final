@@ -4,6 +4,7 @@
 //					-| Constructores, destructores e inicializadores |-
 Game::Game(int ancho, int alto, std::string titulo) {
 	
+	pause = false, toggleZoom = false;
 	fps = 60.0f; frameTime = 1.0f / fps;
 	clock_1 = new Clock; time_1 = new Time; 
 
@@ -11,7 +12,7 @@ Game::Game(int ancho, int alto, std::string titulo) {
 	wnd->setVisible(true);
 	wnd->setFramerateLimit(fps);
 	
-	SetZoom();
+	InitCamera();
 	InitPhysics();
 	InitSprites();
 
@@ -23,22 +24,21 @@ Game::~Game(void) {
 
 // Definimos el area del mundo que veremos en nuestro juego
 // Box2D tiene problemas para simular magnitudes muy grandes
-void Game::SetZoom() {
-	View camara;
+void Game::InitCamera() {
 	// Posicion del view
-	camara.setSize(15.0f, 15.0f);
-	camara.setCenter(50.0f, 50.0f);
-	wnd->setView(camara); //asignamos la camara
+	camera.setSize(100.0f, 100.0f);
+	camera.setCenter(50.0f, 50.0f);
+	wnd->setView(camera); //asignamos la camara
 }
 
 void Game::InitPhysics() {
 	// Inicializamos el mundo con la gravedad por defecto
-	phyWorld = new b2World(b2Vec2(0.0f, 9.8f * 0));
+	phyWorld = new b2World(b2Vec2(0.0f, 9.8f * 1));
 
 	// Creamos el renderer de debug y le seteamos las banderas para que dibuje TODO
 	debugRender = new SFMLRenderer(wnd);
 	debugRender->SetFlags(UINT_MAX);
-	//phyWorld->SetDebugDraw(debugRender);
+	phyWorld->SetDebugDraw(debugRender);
 
 	// Crea el piso
 	groundBody = Box2DHelper::CreateRectangularStaticBody(phyWorld, 100, 10);
@@ -55,7 +55,7 @@ void Game::InitPhysics() {
 	canon->SetTransform(b2Vec2(11.0f, 90.0f), 0.0f);
 
 	// Ragdoll
-	rag_1 = new Ragdoll(phyWorld, Vector2f(50.0f, 50.0f), 0);
+	rag_1 = new Ragdoll(phyWorld, Vector2f(50.0f, 85.0f), 0);
 	
 }
 
@@ -65,12 +65,6 @@ void Game::InitSprites() {
 
 	spr_ground.setTexture(txt_ground);
 	spr_ground.setOrigin({ txt_ground.getSize().x / 2.0f, txt_ground.getSize().y / 2.0f });
-
-}
-
-void Game::InitActors() {
-
-
 
 }
 
@@ -85,7 +79,8 @@ void Game::Loop() {
 			wnd->clear(clearColor);
 			DoEvents();
 			CheckCollitions();
-			UpdatePhysics();
+			if(!pause){ UpdatePhysics(); }
+			UpdateCamera();
 			DrawGame();
 			wnd->display();
 
@@ -109,7 +104,7 @@ void Game::UpdatePhysics() {
 }
 
 void Game::CheckCollitions() {
-	// Veremos mas adelante
+	
 }
 
 void Game::DoEvents() {
@@ -119,14 +114,44 @@ void Game::DoEvents() {
 			case Event::Closed:
 				wnd->close();
 				break;
+
+			case Event::KeyPressed:		// Inputs del teclado
+				if (evt.key.code == Keyboard::Escape)	{ wnd->close(); }
+				if (evt.key.code == Keyboard::Space)	{ pause = !pause  ; }
+				if (evt.key.code == Keyboard::Z)		{ toggleZoom = !toggleZoom; }
+
 			case Event::MouseButtonPressed:
 				
 				break;
+
 			case Event::MouseButtonReleased:
 				
 				break;
 		}
 	}
+}
+
+void Game::UpdateCamera() {
+
+	if (toggleZoom) {
+		SetZoom(Vector2f(15.0f, 15.0f));
+		UpdateCameraPos(rag_1->GetPosition());
+	}
+	else {
+		SetZoom(Vector2f(100.0f, 100.0f)); 
+		UpdateCameraPos(b2Vec2(50.0f, 50.0f));
+	}
+	wnd->setView(camera);
+}
+
+// Aux
+
+void Game::SetZoom(Vector2f zoom) {
+	camera.setSize(zoom.x, zoom.y);
+}
+
+void Game::UpdateCameraPos(b2Vec2 pos) {
+	camera.setCenter(pos.x, pos.y);
 }
 
 float Game::deg2rad(float deg) {
