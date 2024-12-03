@@ -10,7 +10,7 @@ class Game {
 
 	private:
 		// Propiedades de la ventana
-		int height, width;
+		int height, width, ragdollsCount;
 		RenderWindow *wnd;
 		Color clearColor;
 
@@ -34,13 +34,16 @@ class Game {
 		b2Body* canon;
 
 		// Ragdoll
+		Ragdoll* rag_i[50];
 		Ragdoll* rag_1;
 
 		//					-| Texturas y Sprites |-
 
 		Texture txt_ground;
+		Texture txt_canon;
 		
 		Sprite spr_ground;
+		Sprite spr_canon;
 
 	public:
 
@@ -61,6 +64,7 @@ class Game {
 		void UpdateCamera();
 
 		//Aux
+		void SetUpSprite(b2Body* body, Texture& txt, Sprite& spr);
 		void SetZoom(Vector2f zoom);
 		void UpdateCameraPos(b2Vec2 pos);
 		float deg2rad(float deg);

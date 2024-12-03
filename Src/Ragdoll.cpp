@@ -145,6 +145,12 @@ void Ragdoll::Draw(RenderWindow& wnd) {
 
 }
 
+void Ragdoll::ApplyForce(float v_force, float rad_angle) {
+
+	Torso->ApplyForceToCenter(b2Vec2(Torso->GetPosition().x * v_force * cos(rad_angle), Torso->GetPosition().y * v_force * sin(rad_angle)), false);
+
+}
+
 // Aux
 
 b2Vec2 Ragdoll::GetPosition() {

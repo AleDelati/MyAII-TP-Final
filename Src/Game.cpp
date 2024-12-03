@@ -12,6 +12,8 @@ Game::Game(int ancho, int alto, std::string titulo) {
 	wnd->setVisible(true);
 	wnd->setFramerateLimit(fps);
 	
+	ragdollsCount = -1;
+
 	InitCamera();
 	InitPhysics();
 	InitSprites();
@@ -19,7 +21,7 @@ Game::Game(int ancho, int alto, std::string titulo) {
 }
 
 Game::~Game(void) {
-
+	
 }
 
 // Definimos el area del mundo que veremos en nuestro juego
@@ -38,7 +40,7 @@ void Game::InitPhysics() {
 	// Creamos el renderer de debug y le seteamos las banderas para que dibuje TODO
 	debugRender = new SFMLRenderer(wnd);
 	debugRender->SetFlags(UINT_MAX);
-	phyWorld->SetDebugDraw(debugRender);
+	//phyWorld->SetDebugDraw(debugRender);
 
 	// Crea el piso
 	groundBody = Box2DHelper::CreateRectangularStaticBody(phyWorld, 100, 10);
@@ -52,7 +54,7 @@ void Game::InitPhysics() {
 	canonBase->SetTransform(b2Vec2(4.0f, 92.0f), canonBase->GetAngle() + deg2rad(-10.0f));
 
 	canon = Box2DHelper::CreateRectangularStaticBody(phyWorld, 9, 3);
-	canon->SetTransform(b2Vec2(11.0f, 90.0f), 0.0f);
+	canon->SetTransform(b2Vec2(11.0f, 90.0f), 0);
 
 	// Ragdoll
 	rag_1 = new Ragdoll(phyWorld, Vector2f(50.0f, 85.0f), 0);
@@ -61,10 +63,13 @@ void Game::InitPhysics() {
 
 void Game::InitSprites() {
 
+	// Suelo
 	txt_ground.loadFromFile("Sprites/Edge.png");
+	SetUpSprite(groundBody, txt_ground, spr_ground);
 
-	spr_ground.setTexture(txt_ground);
-	spr_ground.setOrigin({ txt_ground.getSize().x / 2.0f, txt_ground.getSize().y / 2.0f });
+	// Cañon
+	txt_canon.loadFromFile("Sprites/Canon.png");
+	SetUpSprite(canon, txt_canon, spr_canon);
 
 }
 
@@ -91,9 +96,16 @@ void Game::Loop() {
 void Game::DrawGame() {
 
 	wnd->draw(spr_ground);
-	spr_ground.setPosition(groundBody->GetPosition().x, groundBody->GetPosition().y);
+
+	wnd->draw(spr_canon);
+	spr_canon.setRotation(rad2deg(canon->GetAngle()));
 
 	rag_1->Draw(*wnd);
+	for (int i = 0; i < 50; i++) {
+		if (i <= ragdollsCount) {
+			rag_i[i]->Draw(*wnd);
+		}
+	}
 
 }
 
@@ -117,8 +129,27 @@ void Game::DoEvents() {
 
 			case Event::KeyPressed:		// Inputs del teclado
 				if (evt.key.code == Keyboard::Escape)	{ wnd->close(); }
-				if (evt.key.code == Keyboard::Space)	{ pause = !pause  ; }
+				if (evt.key.code == Keyboard::X)	{ pause = !pause  ; }
 				if (evt.key.code == Keyboard::Z)		{ toggleZoom = !toggleZoom; }
+				if (evt.key.code == Keyboard::Space) {
+
+					ragdollsCount++;
+					rag_i[ragdollsCount] = new Ragdoll(phyWorld, Vector2f(canon->GetPosition().x + 6.0f, canon->GetPosition().y), 0);
+					rag_i[ragdollsCount]->ApplyForce(500, canon->GetAngle());
+					
+				}
+
+				if (evt.key.code == Keyboard::A) {
+					if (canon->GetAngle() > deg2rad(-90)) {
+						canon->SetTransform(canon->GetPosition(), canon->GetAngle() + deg2rad(-3));
+					}
+				}
+				if (evt.key.code == Keyboard::D) {
+					if (canon->GetAngle() < 0) {
+						canon->SetTransform(canon->GetPosition(), canon->GetAngle() + deg2rad(3));
+						if (canon->GetAngle() > 0) { canon->SetTransform(canon->GetPosition(), 0); }
+					}
+				}
 
 			case Event::MouseButtonPressed:
 				
@@ -144,7 +175,27 @@ void Game::UpdateCamera() {
 	wnd->setView(camera);
 }
 
-// Aux
+//					-| Aux |-
+
+// Setea el sprite para que coincida su tamaño con el del body asignado
+void Game::SetUpSprite(b2Body* body, Texture& txt, Sprite& spr) {
+
+	spr.setTexture(txt);
+
+	spr.setOrigin(txt.getSize().x / 2.0f, txt.getSize().y / 2.0f);
+	spr.setPosition(body->GetPosition().x, body->GetPosition().y);
+	//spr.setRotation(rad2deg(body->GetAngle()));
+
+	b2AABB dimension;
+	dimension.upperBound = b2Vec2(-FLT_MAX, -FLT_MAX);
+	dimension.lowerBound = b2Vec2(FLT_MAX, FLT_MAX);
+	for (b2Fixture* f = body->GetFixtureList(); f != NULL; f = f->GetNext()) {
+		dimension = f->GetAABB(0);
+	}
+
+	spr.setScale(dimension.GetExtents().x * 2 / txt.getSize().x, dimension.GetExtents().y * 2 / txt.getSize().y);
+
+}
 
 void Game::SetZoom(Vector2f zoom) {
 	camera.setSize(zoom.x, zoom.y);
