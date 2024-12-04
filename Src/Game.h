@@ -20,6 +20,9 @@ class Game {
 		Time* time_1;
 
 		View camera;
+
+		Vector2i mouse_Pos;
+		Vector2f mouse_PosCoord;
 		//					-| Box2D |-
 
 		b2World* phyWorld;
@@ -59,7 +62,7 @@ class Game {
 		void Loop();
 		void DrawGame();
 		void UpdatePhysics();
-		void CheckCollitions();
+		void UpdateCanon();
 		void DoEvents();
 		void UpdateCamera();
 

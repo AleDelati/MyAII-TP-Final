@@ -83,7 +83,7 @@ void Game::Loop() {
 
 			wnd->clear(clearColor);
 			DoEvents();
-			CheckCollitions();
+			UpdateCanon();
 			if(!pause){ UpdatePhysics(); }
 			UpdateCamera();
 			DrawGame();
@@ -115,8 +115,19 @@ void Game::UpdatePhysics() {
 	phyWorld->DebugDraw();
 }
 
-void Game::CheckCollitions() {
-	
+void Game::UpdateCanon() {
+
+	// Actualiza la posicion del mouse relativa a la ventana
+	mouse_Pos = Mouse::getPosition(*wnd);
+	mouse_PosCoord = wnd->mapPixelToCoords(mouse_Pos);
+
+	// Calcula el angulo de la posicion objetivo para rotar el cañon
+	float targetPos = atan2f(mouse_PosCoord.y - canon->GetPosition().y, mouse_PosCoord.x - canon->GetPosition().x);
+	// Rota el cañon en el angulo calculado solo si el angulo esta dentro del rango deseado ( de 0° a -90° )
+	if (rad2deg(targetPos) <= 0 && rad2deg(targetPos) >= -90) {
+		canon->SetTransform(canon->GetPosition(), targetPos);
+	}
+
 }
 
 void Game::DoEvents() {
@@ -140,19 +151,23 @@ void Game::DoEvents() {
 				}
 
 				if (evt.key.code == Keyboard::A) {
+					/*
 					if (canon->GetAngle() > deg2rad(-90)) {
 						canon->SetTransform(canon->GetPosition(), canon->GetAngle() + deg2rad(-3));
 					}
+					*/
 				}
 				if (evt.key.code == Keyboard::D) {
+					/*
 					if (canon->GetAngle() < 0) {
 						canon->SetTransform(canon->GetPosition(), canon->GetAngle() + deg2rad(3));
 						if (canon->GetAngle() > 0) { canon->SetTransform(canon->GetPosition(), 0); }
 					}
+					*/
 				}
 
 			case Event::MouseButtonPressed:
-				
+				rag_1 = new Ragdoll(phyWorld, mouse_PosCoord, 0);
 				break;
 
 			case Event::MouseButtonReleased:
