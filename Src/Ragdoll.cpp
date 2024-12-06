@@ -145,10 +145,9 @@ void Ragdoll::Draw(RenderWindow& wnd) {
 
 }
 
-void Ragdoll::ApplyForce(float v_force, float rad_angle) {
+void Ragdoll::ApplyForce(Vector2f mouse_p) {
 
-	Torso->ApplyForceToCenter(b2Vec2(Torso->GetPosition().x * v_force * cos(rad_angle), Torso->GetPosition().y * v_force * sin(rad_angle)), false);
-
+	Torso->ApplyForceToCenter(b2Vec2(mouse_p.x * 1000, mouse_p.y * 1000), false);
 }
 
 // Aux

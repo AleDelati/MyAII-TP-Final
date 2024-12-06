@@ -42,9 +42,14 @@ void Game::InitPhysics() {
 	debugRender->SetFlags(UINT_MAX);
 	//phyWorld->SetDebugDraw(debugRender);
 
-	// Crea el piso
-	groundBody = Box2DHelper::CreateRectangularStaticBody(phyWorld, 100, 10);
+	// Crea el suelo, muros laterales y techo
+	groundBody = Box2DHelper::CreateRectangularStaticBody(phyWorld, 100, 10, 0.5f);
 	groundBody->SetTransform(b2Vec2(50.0f, 100.0f), 0.0f);
+
+	for (int i = 0; i < 3; i++) { borders[i] = Box2DHelper::CreateRectangularStaticBody(phyWorld, 100, 10); }
+	borders[0]->SetTransform(b2Vec2(50.0f, -4.0f), 0.0f);
+	borders[1]->SetTransform(b2Vec2(-4.0f, 50.0f), deg2rad(90));
+	borders[2]->SetTransform(b2Vec2(104.0f, 50.0f), deg2rad(-90));
 
 	// Crea el cañon
 	canonWheel = Box2DHelper::CreateCircularStaticBody(phyWorld, 2.0f);
@@ -54,11 +59,8 @@ void Game::InitPhysics() {
 	canonBase->SetTransform(b2Vec2(4.0f, 92.0f), canonBase->GetAngle() + deg2rad(-10.0f));
 
 	canon = Box2DHelper::CreateRectangularStaticBody(phyWorld, 9, 3);
-	canon->SetTransform(b2Vec2(11.0f, 90.0f), 0);
+	canon->SetTransform(b2Vec2(6.0f, 90.0f), 0);
 
-	// Ragdoll
-	rag_1 = new Ragdoll(phyWorld, Vector2f(50.0f, 85.0f), 0);
-	
 }
 
 void Game::InitSprites() {
@@ -100,7 +102,7 @@ void Game::DrawGame() {
 	wnd->draw(spr_canon);
 	spr_canon.setRotation(rad2deg(canon->GetAngle()));
 
-	rag_1->Draw(*wnd);
+	// Dibuja los Ragdolls
 	for (int i = 0; i < 50; i++) {
 		if (i <= ragdollsCount) {
 			rag_i[i]->Draw(*wnd);
@@ -138,38 +140,23 @@ void Game::DoEvents() {
 				wnd->close();
 				break;
 
-			case Event::KeyPressed:		// Inputs del teclado
+			case Event::KeyPressed:				// Inputs del teclado
 				if (evt.key.code == Keyboard::Escape)	{ wnd->close(); }
-				if (evt.key.code == Keyboard::X)	{ pause = !pause  ; }
 				if (evt.key.code == Keyboard::Z)		{ toggleZoom = !toggleZoom; }
-				if (evt.key.code == Keyboard::Space) {
+				if (evt.key.code == Keyboard::Space)	{ pause = !pause; }
 
+			case Event::MouseButtonPressed:		// Inputs del mouse
+				if (evt.mouseButton.button == Mouse::Left) {
 					ragdollsCount++;
-					rag_i[ragdollsCount] = new Ragdoll(phyWorld, Vector2f(canon->GetPosition().x + 6.0f, canon->GetPosition().y), 0);
-					rag_i[ragdollsCount]->ApplyForce(500, canon->GetAngle());
-					
-				}
 
-				if (evt.key.code == Keyboard::A) {
-					/*
-					if (canon->GetAngle() > deg2rad(-90)) {
-						canon->SetTransform(canon->GetPosition(), canon->GetAngle() + deg2rad(-3));
-					}
-					*/
-				}
-				if (evt.key.code == Keyboard::D) {
-					/*
-					if (canon->GetAngle() < 0) {
-						canon->SetTransform(canon->GetPosition(), canon->GetAngle() + deg2rad(3));
-						if (canon->GetAngle() > 0) { canon->SetTransform(canon->GetPosition(), 0); }
-					}
-					*/
-				}
+					// Calcula la posicion de la punta del cañon y lo spawnea en esa posicion
+					rag_i[ragdollsCount] = new Ragdoll(phyWorld, Vector2f(canon->GetPosition().x + 6 * cos(canon->GetAngle()), canon->GetPosition().y + 6 * sin(canon->GetAngle())), 0);
 
-			case Event::MouseButtonPressed:
-				rag_1 = new Ragdoll(phyWorld, mouse_PosCoord, 0);
-				break;
-
+					// Calcula la direccion en la cual aplicar la fuerza al ragdoll disparado
+					rag_i[ragdollsCount]->ApplyForce({ mouse_PosCoord.x - canon->GetPosition().x, mouse_PosCoord.y - canon->GetPosition().y });
+					break;
+				}
+				
 			case Event::MouseButtonReleased:
 				
 				break;
@@ -178,10 +165,11 @@ void Game::DoEvents() {
 }
 
 void Game::UpdateCamera() {
-
+	
+	// Al Activar el Zoom, se lleva a cabo en el ultimo ragdoll disparado por el cañon
 	if (toggleZoom) {
 		SetZoom(Vector2f(15.0f, 15.0f));
-		UpdateCameraPos(rag_1->GetPosition());
+		UpdateCameraPos(rag_i[ragdollsCount]->GetPosition());
 	}
 	else {
 		SetZoom(Vector2f(100.0f, 100.0f)); 

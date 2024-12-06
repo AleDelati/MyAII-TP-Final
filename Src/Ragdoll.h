@@ -13,7 +13,7 @@ public:
 	Ragdoll(b2World *world, Vector2f pos, float angle);
 	void InitSprites();
 	void Draw(RenderWindow& wnd);
-	void ApplyForce(float v_force, float rad_angle);
+	void ApplyForce(Vector2f mouse_p);
 
 	// Aux
 	b2Vec2 GetPosition();

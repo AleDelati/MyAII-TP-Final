@@ -150,6 +150,13 @@ public:
 		body->CreateFixture(&box);
 		return body;
 	}
+	static b2Body* CreateRectangularStaticBody(b2World* phyWorld, float sizeX, float sizeY, float friction)
+	{
+		b2Body* body = CreateStaticBody(phyWorld);
+		b2FixtureDef box = CreateRectangularFixtureDef(sizeX, sizeY, 0.0f, friction, 0.0f);
+		body->CreateFixture(&box);
+		return body;
+	}
 
 	//-------------------------------------------------------------
 	// Crea un body dinamico con un fixture circular centrado en el origen

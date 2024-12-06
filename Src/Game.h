@@ -23,13 +23,15 @@ class Game {
 
 		Vector2i mouse_Pos;
 		Vector2f mouse_PosCoord;
+
 		//					-| Box2D |-
 
 		b2World* phyWorld;
 		SFMLRenderer* debugRender;
 
-		// Piso
+		// Suelo, laterales y techo
 		b2Body* groundBody;
+		b2Body* borders[3];
 
 		// Cañon
 		b2Body* canonWheel;
@@ -38,7 +40,6 @@ class Game {
 
 		// Ragdoll
 		Ragdoll* rag_i[50];
-		Ragdoll* rag_1;
 
 		//					-| Texturas y Sprites |-
 
