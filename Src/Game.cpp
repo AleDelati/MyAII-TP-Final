@@ -13,6 +13,7 @@ Game::Game(int ancho, int alto, std::string titulo) {
 	wnd->setFramerateLimit(fps);
 	
 	ragdollsCount = -1;
+	for (int i = 0; i < 50; i++) { instantiatedRagdolls[i] = false; }
 
 	InitCamera();
 	InitPhysics();
@@ -35,7 +36,7 @@ void Game::InitCamera() {
 
 void Game::InitPhysics() {
 	// Inicializamos el mundo con la gravedad por defecto
-	phyWorld = new b2World(b2Vec2(0.0f, 9.8f * 1));
+	phyWorld = new b2World(b2Vec2(0.0f, 9.8f * 3));
 
 	// Creamos el renderer de debug y le seteamos las banderas para que dibuje TODO
 	debugRender = new SFMLRenderer(wnd);
@@ -44,23 +45,22 @@ void Game::InitPhysics() {
 
 	// Crea el suelo, muros laterales y techo
 	groundBody = Box2DHelper::CreateRectangularStaticBody(phyWorld, 100, 10, 0.5f);
-	groundBody->SetTransform(b2Vec2(50.0f, 100.0f), 0.0f);
+	groundBody->SetTransform(b2Vec2(50.0f, 99.45f), 0.0f);
 
 	for (int i = 0; i < 3; i++) { borders[i] = Box2DHelper::CreateRectangularStaticBody(phyWorld, 100, 10); }
-	borders[0]->SetTransform(b2Vec2(50.0f, -4.0f), 0.0f);
-	borders[1]->SetTransform(b2Vec2(-4.0f, 50.0f), deg2rad(90));
-	borders[2]->SetTransform(b2Vec2(104.0f, 50.0f), deg2rad(-90));
+	borders[0]->SetTransform(b2Vec2(50.0f, -5.0f), 0.0f);
+	borders[1]->SetTransform(b2Vec2(-5.0f, 50.0f), deg2rad(90));
+	borders[2]->SetTransform(b2Vec2(105.0f, 50.0f), deg2rad(-90));
 
 	// Crea el cañon
-	canonWheel = Box2DHelper::CreateCircularStaticBody(phyWorld, 2.0f);
-	canonWheel->SetTransform(b2Vec2(8.0f, 93.0f), 0.0f);
-
-	canonBase = Box2DHelper::CreateRectangularStaticBody(phyWorld, 15, 1);
-	canonBase->SetTransform(b2Vec2(4.0f, 92.0f), canonBase->GetAngle() + deg2rad(-10.0f));
-
 	canon = Box2DHelper::CreateRectangularStaticBody(phyWorld, 9, 3);
-	canon->SetTransform(b2Vec2(6.0f, 90.0f), 0);
+	canon->SetTransform(b2Vec2(2.0f, 93.0f), 0);
 
+	canonBase = Box2DHelper::CreateCircularStaticBody(phyWorld, 3.5);
+	canonBase->SetTransform(canon->GetPosition(), 0);
+
+	// Inicializa el Level Manager
+	lvl_Manager = new LevelManager(phyWorld, 0);
 }
 
 void Game::InitSprites() {
@@ -97,15 +97,22 @@ void Game::Loop() {
 
 void Game::DrawGame() {
 
-	wnd->draw(spr_ground);
-
+	// Dibuja el Cañon
+	//wnd->draw(spr_canonBase);
 	wnd->draw(spr_canon);
 	spr_canon.setRotation(rad2deg(canon->GetAngle()));
+
+	wnd->draw(spr_ground);
+	
+	// Dibuja el nivel actual
+	lvl_Manager->DrawLevel(*wnd);
 
 	// Dibuja los Ragdolls
 	for (int i = 0; i < 50; i++) {
 		if (i <= ragdollsCount) {
-			rag_i[i]->Draw(*wnd);
+			if (rag_i[i] != nullptr) {
+				rag_i[i]->Draw(*wnd);
+			}
 		}
 	}
 
@@ -143,18 +150,41 @@ void Game::DoEvents() {
 			case Event::KeyPressed:				// Inputs del teclado
 				if (evt.key.code == Keyboard::Escape)	{ wnd->close(); }
 				if (evt.key.code == Keyboard::Z)		{ toggleZoom = !toggleZoom; }
+				if (evt.key.code == Keyboard::R)		{
+					//Reinicio del nivel actual
+					lvl_Manager->ResetLevel();
+					//Reinicia los ragdolls
+					for (int i = 0; i <= ragdollsCount; i++) {
+						rag_i[i]->Disable();
+						if (i == ragdollsCount) { ragdollsCount = -1; }
+					}
+				}
+				if (evt.key.code == Keyboard::L)		{ lvl_Manager->NextLevel(); }
 				if (evt.key.code == Keyboard::Space)	{ pause = !pause; }
 
 			case Event::MouseButtonPressed:		// Inputs del mouse
 				if (evt.mouseButton.button == Mouse::Left) {
-					ragdollsCount++;
 
-					// Calcula la posicion de la punta del cañon y lo spawnea en esa posicion
-					rag_i[ragdollsCount] = new Ragdoll(phyWorld, Vector2f(canon->GetPosition().x + 6 * cos(canon->GetAngle()), canon->GetPosition().y + 6 * sin(canon->GetAngle())), 0);
+					if (instantiatedRagdolls[ragdollsCount+1] == false) {
+						instantiatedRagdolls[ragdollsCount + 1] = true;
+						ragdollsCount++;
 
-					// Calcula la direccion en la cual aplicar la fuerza al ragdoll disparado
-					rag_i[ragdollsCount]->ApplyForce({ mouse_PosCoord.x - canon->GetPosition().x, mouse_PosCoord.y - canon->GetPosition().y });
-					break;
+						// Calcula la posicion de la punta del cañon y lo spawnea en esa posicion
+						rag_i[ragdollsCount] = new Ragdoll(phyWorld, Vector2f(canon->GetPosition().x + 6 * cos(canon->GetAngle()), canon->GetPosition().y + 6 * sin(canon->GetAngle())), 0);
+
+						// Calcula la direccion en la cual aplicar la fuerza al ragdoll disparado
+						rag_i[ragdollsCount]->ApplyForce({ mouse_PosCoord.x - canon->GetPosition().x, mouse_PosCoord.y - canon->GetPosition().y });
+					}
+					else {
+						ragdollsCount++;
+
+						// Calcula la posicion de la punta del cañon y lo resetea en esa posicion
+						rag_i[ragdollsCount]->Reset(Vector2f(canon->GetPosition().x + 6 * cos(canon->GetAngle()), canon->GetPosition().y + 6 * sin(canon->GetAngle())));
+
+						// Calcula la direccion en la cual aplicar la fuerza al ragdoll disparado
+						rag_i[ragdollsCount]->ApplyForce({ mouse_PosCoord.x - canon->GetPosition().x, mouse_PosCoord.y - canon->GetPosition().y });
+					}
+					
 				}
 				
 			case Event::MouseButtonReleased:
@@ -181,13 +211,13 @@ void Game::UpdateCamera() {
 //					-| Aux |-
 
 // Setea el sprite para que coincida su tamaño con el del body asignado
-void Game::SetUpSprite(b2Body* body, Texture& txt, Sprite& spr) {
+void Game::SetUpSprite(b2Body *body, Texture &txt, Sprite &spr) {
 
 	spr.setTexture(txt);
 
 	spr.setOrigin(txt.getSize().x / 2.0f, txt.getSize().y / 2.0f);
 	spr.setPosition(body->GetPosition().x, body->GetPosition().y);
-	//spr.setRotation(rad2deg(body->GetAngle()));
+	spr.setRotation(rad2deg(body->GetAngle()));
 
 	b2AABB dimension;
 	dimension.upperBound = b2Vec2(-FLT_MAX, -FLT_MAX);

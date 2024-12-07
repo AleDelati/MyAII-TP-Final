@@ -2,7 +2,6 @@
 #include <SFML/Graphics.hpp>
 #include <Box2D/Box2D.h>
 #include "Box2DHelper.h"
-#include "Actor.h"
 
 using namespace sf;
 
@@ -11,17 +10,24 @@ class Ragdoll {
 public:
 
 	Ragdoll(b2World *world, Vector2f pos, float angle);
+	~Ragdoll();
+
 	void InitSprites();
-	void Draw(RenderWindow& wnd);
+	void Draw(RenderWindow &wnd);
 	void ApplyForce(Vector2f mouse_p);
+
+	void Disable();
+	void Reset(Vector2f pos);
 
 	// Aux
 	b2Vec2 GetPosition();
-	void SetUpSprite(b2Body* body, Sprite& spr);
+	void SetUpSprite(b2Body *body, Sprite &spr);
+
 	float deg2rad(float deg);
 	float rad2deg(float rad);
 
 private:
+	bool disabled;
 
 	b2Body* Torso;
 	b2Body* Head;
