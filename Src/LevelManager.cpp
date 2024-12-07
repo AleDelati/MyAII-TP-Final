@@ -92,7 +92,7 @@ void LevelManager::lvl_0() {
 	
 	//Bloques estaticos
 	PlaceLine(b2Vec2(50, 92), 0, 7, "Up", "st");
-	PlaceLine(b2Vec2(50, 32), 7, 7, "Up", "st");
+	PlaceLine(b2Vec2(50, 32), 7, 6, "Up", "st");
 
 	//Bloques dinamicos
 	PlaceLine(b2Vec2(50, 57), 0, 5, "Up", "di");

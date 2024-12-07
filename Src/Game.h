@@ -13,8 +13,7 @@ class Game {
 
 	private:
 		// Propiedades de la ventana
-		int height, width, ragdollsCount;
-		bool instantiatedRagdolls[50];
+		int height, width;
 		RenderWindow *wnd;
 		Color clearColor;
 
@@ -35,22 +34,24 @@ class Game {
 		SFMLRenderer* debugRender;
 
 		// Suelo, laterales y techo
-		b2Body* groundBody;
-		b2Body* borders[3];
+		b2Body* borders[4];
 
 		// Cañon
 		b2Body* canon;
 		b2Body* canonBase;
 
-		// Ragdoll
+		// Ragdolls
+		int rag_Count, rag_ReadyToDraw;
+		bool rag_Instantiated[50];
+
 		Ragdoll* rag_i[50];
 
 		//					-| Texturas y Sprites |-
 
-		Texture txt_ground;
+		Texture txt_UpDown_Edge, txt_SideEdge;
 		Texture txt_canon, txt_canonBase;
 		
-		Sprite spr_ground;
+		Sprite spr_UpDown_Edge[2], spr_Side_Edge[2];
 		Sprite spr_canon, spr_canonBase;
 
 	public:
