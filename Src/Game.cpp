@@ -42,7 +42,7 @@ void Game::InitPhysics() {
 	// Creamos el renderer de debug y le seteamos las banderas para que dibuje TODO
 	debugRender = new SFMLRenderer(wnd);
 	debugRender->SetFlags(UINT_MAX);
-	//phyWorld->SetDebugDraw(debugRender);
+	phyWorld->SetDebugDraw(debugRender);
 
 	// Crea el suelo, muros laterales y techo
 	for (int i = 0; i < 2; i++) { borders[i] = Box2DHelper::CreateRectangularStaticBody(phyWorld, 120, 10, 0.5f); }
@@ -66,11 +66,11 @@ void Game::InitPhysics() {
 void Game::InitSprites() {
 
 	// Bordes
-	txt_UpDown_Edge.loadFromFile("Sprites/Up-Down_Edge.png");
+	txt_UpDown_Edge.loadFromFile("Sprites/lvl_Sprites/Up-Down_Edge.png");
 	SetUpSprite(borders[0], txt_UpDown_Edge, spr_UpDown_Edge[0]);
 	SetUpSprite(borders[1], txt_UpDown_Edge, spr_UpDown_Edge[1]);
 
-	txt_SideEdge.loadFromFile("Sprites/Side_Edge.png");
+	txt_SideEdge.loadFromFile("Sprites/lvl_Sprites/Side_Edge.png");
 	SetUpSprite(borders[2], txt_SideEdge, spr_Side_Edge[0]);
 	SetUpSprite(borders[3], txt_SideEdge, spr_Side_Edge[1]);
 
@@ -149,6 +149,11 @@ void Game::DoEvents() {
 
 			case Event::KeyPressed:				// Inputs del teclado
 				if (evt.key.code == Keyboard::Escape)	{ wnd->close(); }
+				if (evt.key.code == Keyboard::F1)		{
+					// Activa|Desactiva la vista de Debug
+					if (debugRender->GetFlags() == UINT_MAX) { debugRender->SetFlags(0); }
+					else { debugRender->SetFlags(UINT_MAX); }
+				}
 				if (evt.key.code == Keyboard::Z)		{ toggleZoom = !toggleZoom; }
 				if (evt.key.code == Keyboard::R)		{
 					//Reinicio del nivel actual

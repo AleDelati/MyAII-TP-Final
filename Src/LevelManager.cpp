@@ -2,8 +2,11 @@
 
 LevelManager::LevelManager(b2World *wrld, int lvl) {
 	world = wrld;
+
 	current_lvl = lvl;
 	last_lvl = 1;
+
+	di_Blocks_GravSc = 2.0f;
 
 	InitBlocks();
 	InitSprites();
@@ -20,16 +23,22 @@ void LevelManager::InitBlocks() {
 	// Inicializa los bloques dinamicos
 	for (int i = 0; i < 25; i++) {
 		di_Blocks[i] = Box2DHelper::CreateRectangularDynamicBody(world, 5, 5, 0.05f, 1.0f, 0.25f);
-		di_Blocks[i]->SetGravityScale(2);		// Para personalizar como afecta la gravedad a los bloques dinamicos
+		di_Blocks[i]->SetGravityScale(di_Blocks_GravSc);		// Para personalizar como afecta la gravedad a los bloques dinamicos
 	}
 }
 
 void LevelManager::InitSprites() {
+	// Inicializa los sprites
 	txt_st_Blocks.loadFromFile("Sprites/lvl_Sprites/lvl_st_Block.png");
 	for (int i = 0; i < 100; i++) { SetUpSprite(st_Blocks[i], txt_st_Blocks, spr_st_Blocks[i]); }
 
 	txt_di_Blocks.loadFromFile("Sprites/lvl_Sprites/lvl_di_Block.png");
 	for (int i = 0; i < 25; i++) { SetUpSprite(di_Blocks[i], txt_di_Blocks, spr_di_Blocks[i]); }
+
+	txt_lvl_Exit.loadFromFile("Sprites/lvl_Sprites/lvl_Exit.png");
+	spr_lvl_Exit.setTexture(txt_lvl_Exit);
+	spr_lvl_Exit.setOrigin(txt_lvl_Exit.getSize().x / 2, txt_lvl_Exit.getSize().y / 2);
+	spr_lvl_Exit.setScale(Vector2f(.2997f, .2997f));
 }
 
 void LevelManager::LoadLevel(int lvl) {
@@ -53,13 +62,17 @@ void LevelManager::ChangeLevel(int lvl) {
 
 void LevelManager::ClearLevel() {
 	//Bloques estaticos
-	for (int i = 0; i < 100; i++) { st_Blocks[i]->SetTransform(b2Vec2(0, -50), 0); }
+	for (int i = 0; i < 100; i++) { st_Blocks[i]->SetTransform(b2Vec2(25, -50), 0); }
 
 	//Bloques dinamicos
 	for (int i = 0; i < 25; i++) {
+		di_Blocks[i]->SetGravityScale(0);
 		di_Blocks[i]->SetLinearVelocity(b2Vec2(0, 0));
-		di_Blocks[i]->SetTransform(b2Vec2(0, -50), 0);
+		di_Blocks[i]->SetTransform(b2Vec2(75, -50), 0);
 	}
+
+	//Salida
+	spr_lvl_Exit.setPosition(Vector2f(0, -50));
 }
 
 void LevelManager::NextLevel() {
@@ -85,6 +98,9 @@ void LevelManager::DrawLevel(RenderWindow &wnd) {
 		spr_di_Blocks[i].setRotation(rad2deg(di_Blocks[i]->GetAngle()));
 		wnd.draw(spr_di_Blocks[i]);
 	}
+
+	// Dibuja la salida
+	wnd.draw(spr_lvl_Exit);
 }
 
 //					| Levels |
@@ -95,14 +111,20 @@ void LevelManager::lvl_0() {
 	PlaceLine(b2Vec2(50, 32), 7, 6, "Up", "st");
 
 	//Bloques dinamicos
-	PlaceLine(b2Vec2(50, 57), 0, 5, "Up", "di");
 
+	//Salida
+	spr_lvl_Exit.setPosition(Vector2f(75, 90));
 }
 
 void LevelManager::lvl_1() {
 
 	//Bloques estaticos
-	PlaceLine(b2Vec2(50, 92), 0, 19, "Up", "st");
+	PlaceLine(b2Vec2(50, 92), 0, 7, "Up", "st");
+	PlaceLine(b2Vec2(50, 32), 7, 6, "Up", "st");
+
+	//Bloques dinamicos
+	for(int i = 0; i < 25; i++) { di_Blocks[i]->SetGravityScale(di_Blocks_GravSc); }
+	PlaceLine(b2Vec2(50, 57), 0, 5, "Up", "di");
 
 }
 
@@ -124,6 +146,10 @@ void LevelManager::SetUpSprite(b2Body *body, Texture &txt, Sprite &spr) {
 	}
 
 	spr.setScale(dimension.GetExtents().x * 2 / txt.getSize().x, dimension.GetExtents().y * 2 / txt.getSize().y);
+
+}
+
+void LevelManager::SetUpSprite(Texture &txt, Sprite &spr) {
 
 }
 

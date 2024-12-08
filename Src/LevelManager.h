@@ -25,6 +25,7 @@ public:
 
 	// Aux
 	void SetUpSprite(b2Body *body, Texture &txt, Sprite &spr);
+	void SetUpSprite(Texture &txt, Sprite &spr);
 	float deg2rad(float deg);
 	float rad2deg(float rad);
 
@@ -33,6 +34,7 @@ public:
 private:
 
 	int current_lvl, last_lvl;
+	float di_Blocks_GravSc;
 
 	//
 	b2World *world;
@@ -42,8 +44,10 @@ private:
 	// Texturas y Sprites
 	Texture txt_st_Blocks;
 	Texture txt_di_Blocks;
+	Texture txt_lvl_Exit;
 
 	Sprite spr_st_Blocks[100];
 	Sprite spr_di_Blocks[25];
+	Sprite spr_lvl_Exit;
 
 };
