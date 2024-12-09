@@ -25,7 +25,7 @@ public:
 
 	// Aux
 	void SetUpSprite(b2Body *body, Texture &txt, Sprite &spr);
-	void SetUpSprite(Texture &txt, Sprite &spr);
+	FloatRect GetExitBounds();
 	float deg2rad(float deg);
 	float rad2deg(float rad);
 

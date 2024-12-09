@@ -126,6 +126,8 @@ void LevelManager::lvl_1() {
 	for(int i = 0; i < 25; i++) { di_Blocks[i]->SetGravityScale(di_Blocks_GravSc); }
 	PlaceLine(b2Vec2(50, 57), 0, 5, "Up", "di");
 
+	//Salida
+	spr_lvl_Exit.setPosition(Vector2f(75, 90));
 }
 
 //					| AUX |
@@ -149,8 +151,8 @@ void LevelManager::SetUpSprite(b2Body *body, Texture &txt, Sprite &spr) {
 
 }
 
-void LevelManager::SetUpSprite(Texture &txt, Sprite &spr) {
-
+FloatRect LevelManager::GetExitBounds() {
+	return spr_lvl_Exit.getGlobalBounds();
 }
 
 float LevelManager::deg2rad(float deg) {

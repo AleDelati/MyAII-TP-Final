@@ -68,6 +68,7 @@ class Game {
 		void Loop();
 		void DrawGame();
 		void UpdatePhysics();
+		void CheckCollisions();
 		void UpdateCanon();
 		void DoEvents();
 		void UpdateCamera();
@@ -76,6 +77,7 @@ class Game {
 		void SetUpSprite(b2Body *body, Texture &txt, Sprite &spr);
 		void SetZoom(Vector2f zoom);
 		void UpdateCameraPos(b2Vec2 pos);
+		void ResetRagdolls();
 		float deg2rad(float deg);
 		float rad2deg(float rad);
 		

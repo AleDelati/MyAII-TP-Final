@@ -41,7 +41,7 @@ void Game::InitPhysics() {
 
 	// Creamos el renderer de debug y le seteamos las banderas para que dibuje TODO
 	debugRender = new SFMLRenderer(wnd);
-	debugRender->SetFlags(UINT_MAX);
+	debugRender->SetFlags(0);
 	phyWorld->SetDebugDraw(debugRender);
 
 	// Crea el suelo, muros laterales y techo
@@ -92,6 +92,7 @@ void Game::Loop() {
 			DoEvents();
 			UpdateCanon();
 			if(!pause){ UpdatePhysics(); }
+			CheckCollisions();
 			UpdateCamera();
 			DrawGame();
 			wnd->display();
@@ -122,6 +123,16 @@ void Game::UpdatePhysics() {
 	phyWorld->Step(frameTime, 8, 8);
 	phyWorld->ClearForces();
 	phyWorld->DebugDraw();
+}
+
+void Game::CheckCollisions() {
+	// Si un ragdoll entra en la zona de salida del nivel
+	for (int i = 0; i < rag_ReadyToDraw; i++) {
+		if (lvl_Manager->GetExitBounds().contains(rag_i[i]->GetPosition().x, rag_i[i]->GetPosition().y)) {
+			lvl_Manager->NextLevel();
+			ResetRagdolls();
+		}
+	}
 }
 
 void Game::UpdateCanon() {
@@ -158,12 +169,7 @@ void Game::DoEvents() {
 				if (evt.key.code == Keyboard::R)		{
 					//Reinicio del nivel actual
 					lvl_Manager->ResetLevel();
-
-					//Reinicia los ragdolls
-					for (int i = 0; i <= rag_Count; i++) {
-						rag_i[i]->Disable();
-						if (i == rag_Count) { rag_Count = -1; }
-					}
+					ResetRagdolls();
 				}
 				if (evt.key.code == Keyboard::L)		{ lvl_Manager->NextLevel(); }
 				if (evt.key.code == Keyboard::Space)	{ pause = !pause; }
@@ -244,6 +250,14 @@ void Game::SetZoom(Vector2f zoom) {
 
 void Game::UpdateCameraPos(b2Vec2 pos) {
 	camera.setCenter(pos.x, pos.y);
+}
+
+void Game::ResetRagdolls() {
+	//Reinicia los ragdolls
+	for (int i = 0; i <= rag_Count; i++) {
+		rag_i[i]->Disable();
+		if (i == rag_Count) { rag_Count = -1; }
+	}
 }
 
 float Game::deg2rad(float deg) {
