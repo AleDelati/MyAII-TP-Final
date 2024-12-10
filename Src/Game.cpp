@@ -20,6 +20,11 @@ Game::Game(int ancho, int alto, std::string titulo) {
 	InitPhysics();
 	InitSprites();
 
+	// Inicializa el Level Manager
+	lvl_Manager = new LevelManager(phyWorld, 0);
+	// Inicializa el UI Manager
+	ui_Manager = new UI_Manager();
+
 }
 
 Game::~Game(void) {
@@ -59,8 +64,6 @@ void Game::InitPhysics() {
 	canonBase = Box2DHelper::CreateCircularStaticBody(phyWorld, 3.5);
 	canonBase->SetTransform(canon->GetPosition(), 0);
 
-	// Inicializa el Level Manager
-	lvl_Manager = new LevelManager(phyWorld, 0);
 }
 
 void Game::InitSprites() {
@@ -103,16 +106,19 @@ void Game::Loop() {
 
 void Game::DrawGame() {
 
-	// Dibuja el Cañon
-	//wnd->draw(spr_canonBase);
-	wnd->draw(spr_canon);
-	spr_canon.setRotation(rad2deg(canon->GetAngle()));
-
+	// Dibuja los bordes del nivel
 	for (int i = 0; i < 2; i++) { wnd->draw(spr_Side_Edge[i]); }
 	for (int i = 0; i < 2; i++) { wnd->draw(spr_UpDown_Edge[i]); }
-	
+
 	// Dibuja el nivel actual
 	lvl_Manager->DrawLevel(*wnd);
+
+	// Dibuja los textos
+	ui_Manager->Draw_Text(*wnd, lvl_Manager->GetCurrentLevel());
+
+	// Dibuja el Cañon
+	wnd->draw(spr_canon);
+	spr_canon.setRotation(rad2deg(canon->GetAngle()));
 
 	// Dibuja los Ragdolls
 	for (int i = 0; i < rag_ReadyToDraw; i++) { rag_i[i]->Draw(*wnd); }

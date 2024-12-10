@@ -20,12 +20,15 @@ public:
 	void ResetLevel();
 	void DrawLevel(RenderWindow &wnd);
 
-	void lvl_0();
+	void lvl_0(); // Menu
 	void lvl_1();
+	void lvl_2();
+	void lvl_3();
 
 	// Aux
 	void SetUpSprite(b2Body *body, Texture &txt, Sprite &spr);
 	FloatRect GetExitBounds();
+	int GetCurrentLevel();
 	float deg2rad(float deg);
 	float rad2deg(float rad);
 

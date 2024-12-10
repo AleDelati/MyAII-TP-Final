@@ -4,6 +4,7 @@
 #include "SFMLRenderer.h"
 
 #include "LevelManager.h"
+#include "UI_Manager.h"
 #include "Ragdoll.h"
 
 #include <list>
@@ -28,6 +29,7 @@ class Game {
 		Vector2f mouse_PosCoord;
 
 		LevelManager *lvl_Manager;
+		UI_Manager *ui_Manager;
 
 		//					-| Box2D |-
 		b2World* phyWorld;

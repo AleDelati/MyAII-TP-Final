@@ -4,7 +4,7 @@ LevelManager::LevelManager(b2World *wrld, int lvl) {
 	world = wrld;
 
 	current_lvl = lvl;
-	last_lvl = 1;
+	last_lvl = 3;
 
 	di_Blocks_GravSc = 2.0f;
 
@@ -50,8 +50,14 @@ void LevelManager::LoadLevel(int lvl) {
 	case 1:
 		lvl_1();
 		break;
+	case 2:
+		lvl_2();
+		break;
+	case 3:
+		lvl_3();
+		break;
 	}
-
+	
 }
 
 void LevelManager::ChangeLevel(int lvl) {
@@ -106,14 +112,9 @@ void LevelManager::DrawLevel(RenderWindow &wnd) {
 //					| Levels |
 void LevelManager::lvl_0() {
 	
-	//Bloques estaticos
-	PlaceLine(b2Vec2(50, 92), 0, 7, "Up", "st");
-	PlaceLine(b2Vec2(50, 32), 7, 6, "Up", "st");
-
-	//Bloques dinamicos
-
 	//Salida
 	spr_lvl_Exit.setPosition(Vector2f(75, 90));
+	
 }
 
 void LevelManager::lvl_1() {
@@ -123,11 +124,36 @@ void LevelManager::lvl_1() {
 	PlaceLine(b2Vec2(50, 32), 7, 6, "Up", "st");
 
 	//Bloques dinamicos
-	for(int i = 0; i < 25; i++) { di_Blocks[i]->SetGravityScale(di_Blocks_GravSc); }
+
+	//Salida
+	spr_lvl_Exit.setPosition(Vector2f(75, 90));
+	
+}
+
+void LevelManager::lvl_2() {
+
+	//Bloques estaticos
+	PlaceLine(b2Vec2(50, 92), 0, 7, "Up", "st");
+	PlaceLine(b2Vec2(50, 32), 7, 6, "Up", "st");
+
+	//Bloques dinamicos
+	for (int i = 0; i < 25; i++) { di_Blocks[i]->SetGravityScale(di_Blocks_GravSc); }
 	PlaceLine(b2Vec2(50, 57), 0, 5, "Up", "di");
 
 	//Salida
 	spr_lvl_Exit.setPosition(Vector2f(75, 90));
+
+}
+
+void LevelManager::lvl_3() {
+
+	//Bloques estaticos
+
+	//Bloques dinamicos
+
+	//Salida
+	spr_lvl_Exit.setPosition(Vector2f(75, 90));
+
 }
 
 //					| AUX |
@@ -153,6 +179,10 @@ void LevelManager::SetUpSprite(b2Body *body, Texture &txt, Sprite &spr) {
 
 FloatRect LevelManager::GetExitBounds() {
 	return spr_lvl_Exit.getGlobalBounds();
+}
+
+int LevelManager::GetCurrentLevel() {
+	return current_lvl;
 }
 
 float LevelManager::deg2rad(float deg) {
