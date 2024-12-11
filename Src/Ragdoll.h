@@ -16,7 +16,7 @@ public:
 	void Draw(RenderWindow &wnd);
 	void ApplyForce(Vector2f mouse_p);
 
-	void Disable();
+	void Disable(Vector2f Pos);
 	void Reset(Vector2f pos);
 
 	// Aux

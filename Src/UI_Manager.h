@@ -13,7 +13,7 @@ public:
 	void ChangeLevel(int lvl);
 	void ClearLevel();
 
-	void Draw_Text(RenderWindow &wnd, int lvl);
+	void Draw_Text(RenderWindow &wnd, int lvl, int rag_shot);
 
 	void lvl_0();
 	void lvl_1();
@@ -22,7 +22,8 @@ public:
 
 private:
 
-	Font font_a, font_b;
+	Font font_a;
 	Text text_i[50];
 
+	int rag_Shot;
 };

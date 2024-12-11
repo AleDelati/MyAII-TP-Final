@@ -112,8 +112,11 @@ void LevelManager::DrawLevel(RenderWindow &wnd) {
 //					| Levels |
 void LevelManager::lvl_0() {
 	
+	//Bloques estaticos
+	PlaceLine(b2Vec2(97, 51), 0, 5, "Left", "st");
+
 	//Salida
-	spr_lvl_Exit.setPosition(Vector2f(75, 90));
+	spr_lvl_Exit.setPosition(Vector2f(87.5, 44));
 	
 }
 
@@ -137,7 +140,6 @@ void LevelManager::lvl_2() {
 	PlaceLine(b2Vec2(50, 32), 7, 6, "Up", "st");
 
 	//Bloques dinamicos
-	for (int i = 0; i < 25; i++) { di_Blocks[i]->SetGravityScale(di_Blocks_GravSc); }
 	PlaceLine(b2Vec2(50, 57), 0, 5, "Up", "di");
 
 	//Salida
@@ -148,11 +150,16 @@ void LevelManager::lvl_2() {
 void LevelManager::lvl_3() {
 
 	//Bloques estaticos
+	PlaceLine(b2Vec2(25, 92), 0, 4, "Up", "st");
+	PlaceLine(b2Vec2(25, 52), 4, 10, "Up", "st");
+	PlaceLine(b2Vec2(75, 92), 14, 14, "Up", "st");
 
 	//Bloques dinamicos
+	PlaceLine(b2Vec2(25, 72), 0, 4, "Up", "di");
+	PlaceLine(b2Vec2(75, 22), 4, 4, "Up", "di");
 
 	//Salida
-	spr_lvl_Exit.setPosition(Vector2f(75, 90));
+	spr_lvl_Exit.setPosition(Vector2f(88.5, 90));
 
 }
 
@@ -228,6 +235,7 @@ void LevelManager::PlaceLine(b2Vec2 pos, int from, int lenght, String dir, Strin
 	}
 	else if (block_Type == "di" || block_Type == "Di") {	//Bloques dinamicos
 		di_Blocks[from]->SetTransform(pos, 0);
+		for (int i = 0; i < lenght; i++) { di_Blocks[i]->SetGravityScale(di_Blocks_GravSc); }
 
 		if (dir == "Up" || dir == "up") {
 			for (int i = from + 1; i < from + lenght; i++) {

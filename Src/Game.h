@@ -43,7 +43,7 @@ class Game {
 		b2Body* canonBase;
 
 		// Ragdolls
-		int rag_Count, rag_ReadyToDraw;
+		int rag_Count, rag_ReadyToDraw, rag_Shot;
 		bool rag_Instantiated[50];
 
 		Ragdoll* rag_i[50];

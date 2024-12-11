@@ -13,7 +13,7 @@ Game::Game(int ancho, int alto, std::string titulo) {
 	wnd->setFramerateLimit(fps);
 	
 	// Variables Ragdolls
-	rag_Count = -1; rag_ReadyToDraw = 0;
+	rag_Count = 0; rag_ReadyToDraw = 0, rag_Shot = 0;
 	for (int i = 0; i < 50; i++) { rag_Instantiated[i] = false; }
 
 	InitCamera();
@@ -114,7 +114,7 @@ void Game::DrawGame() {
 	lvl_Manager->DrawLevel(*wnd);
 
 	// Dibuja los textos
-	ui_Manager->Draw_Text(*wnd, lvl_Manager->GetCurrentLevel());
+	ui_Manager->Draw_Text(*wnd, lvl_Manager->GetCurrentLevel(), rag_Shot);
 
 	// Dibuja el Cañon
 	wnd->draw(spr_canon);
@@ -171,38 +171,43 @@ void Game::DoEvents() {
 					if (debugRender->GetFlags() == UINT_MAX) { debugRender->SetFlags(0); }
 					else { debugRender->SetFlags(UINT_MAX); }
 				}
-				if (evt.key.code == Keyboard::Z)		{ toggleZoom = !toggleZoom; }
+				if (evt.key.code == Keyboard::Z)		{
+					if (rag_Count > 0) { toggleZoom = !toggleZoom; }
+				}
 				if (evt.key.code == Keyboard::R)		{
 					//Reinicio del nivel actual
 					lvl_Manager->ResetLevel();
 					ResetRagdolls();
 				}
-				if (evt.key.code == Keyboard::L)		{ lvl_Manager->NextLevel(); }
+				if (evt.key.code == Keyboard::L) { lvl_Manager->NextLevel(); ResetRagdolls(); }
 				if (evt.key.code == Keyboard::Space)	{ pause = !pause; }
 
 			case Event::MouseButtonPressed:		// Inputs del mouse
-				if (evt.mouseButton.button == Mouse::Left) {
+				if (evt.mouseButton.button == Mouse::Left && !toggleZoom) {
 
-					if (rag_Count >= 49) { rag_Count = -1; }
+					if (rag_Count >= 50) { rag_Count = 0; }
+					rag_Shot++;
 
-					if (rag_Instantiated[rag_Count+1] == false) {
-						rag_Instantiated[rag_Count + 1] = true;
-						rag_Count++; rag_ReadyToDraw++;
+					if (rag_Instantiated[rag_Count] == false) {
+						rag_Instantiated[rag_Count] = true;
 
 						// Calcula la posicion de la punta del cañon y lo spawnea en esa posicion
 						rag_i[rag_Count] = new Ragdoll(phyWorld, Vector2f(canon->GetPosition().x + 6 * cos(canon->GetAngle()), canon->GetPosition().y + 6 * sin(canon->GetAngle())), 0);
 
 						// Calcula la direccion en la cual aplicar la fuerza al ragdoll disparado
 						rag_i[rag_Count]->ApplyForce({ mouse_PosCoord.x - canon->GetPosition().x, mouse_PosCoord.y - canon->GetPosition().y });
+
+						rag_Count++; rag_ReadyToDraw++;
 					}
 					else {
-						rag_Count++;
-
+						
 						// Calcula la posicion de la punta del cañon y lo resetea en esa posicion
 						rag_i[rag_Count]->Reset(Vector2f(canon->GetPosition().x + 6 * cos(canon->GetAngle()), canon->GetPosition().y + 6 * sin(canon->GetAngle())));
 
 						// Calcula la direccion en la cual aplicar la fuerza al ragdoll disparado
 						rag_i[rag_Count]->ApplyForce({ mouse_PosCoord.x - canon->GetPosition().x, mouse_PosCoord.y - canon->GetPosition().y });
+
+						rag_Count++;
 					}
 					
 				}
@@ -219,7 +224,7 @@ void Game::UpdateCamera() {
 	// Al Activar el Zoom, se lleva a cabo en el ultimo ragdoll disparado por el cañon
 	if (toggleZoom) {
 		SetZoom(Vector2f(15.0f, 15.0f));
-		UpdateCameraPos(rag_i[rag_Count]->GetPosition());
+		UpdateCameraPos(rag_i[rag_Count - 1]->GetPosition());
 	}
 	else {
 		SetZoom(Vector2f(100.0f, 100.0f)); 
@@ -260,10 +265,15 @@ void Game::UpdateCameraPos(b2Vec2 pos) {
 
 void Game::ResetRagdolls() {
 	//Reinicia los ragdolls
-	for (int i = 0; i <= rag_Count; i++) {
-		rag_i[i]->Disable();
-		if (i == rag_Count) { rag_Count = -1; }
+	Vector2f resetOffset = Vector2f(0, -200);
+	for (int i = 0; i <= rag_ReadyToDraw; i++) {
+		if (rag_Instantiated[i] == true) { 
+			rag_i[i]->Disable(resetOffset);
+			resetOffset = resetOffset + Vector2f(20, 0);
+		}
 	}
+	rag_Shot = 0; rag_Count = 0;
+	toggleZoom = false;
 }
 
 float Game::deg2rad(float deg) {

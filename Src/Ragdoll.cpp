@@ -164,11 +164,11 @@ void Ragdoll::ApplyForce(Vector2f mouse_p) {
 	Torso->ApplyForceToCenter(b2Vec2(mouse_p.x * 250, mouse_p.y * 250), false);
 }
 
-void Ragdoll::Disable() {
+void Ragdoll::Disable(Vector2f Pos) {
 	disabled = true;
 
 	//Torso
-	Torso->SetTransform(b2Vec2(0, -200), 0);
+	Torso->SetTransform(b2Vec2(Pos.x, Pos.y), 0);
 	Torso->SetLinearVelocity(b2Vec2(0, 0));
 	Torso->SetGravityScale(0);
 	//Cabeza
@@ -213,27 +213,27 @@ void Ragdoll::Reset(Vector2f pos) {
 	Torso->SetGravityScale(1);
 	//Cabeza
 	Head->SetTransform(Torso->GetWorldCenter() + b2Vec2(0, -1.35), Torso->GetAngle());
-	Head->SetGravityScale(0);
+	Head->SetGravityScale(1);
 	//Brazo izquierdo
 	LeftArm->SetTransform(Torso->GetWorldCenter() + b2Vec2(-0.87, -0.83), Torso->GetAngle());
-	LeftArm->SetGravityScale(0);
+	LeftArm->SetGravityScale(1);
 	LowLeftArm->SetTransform(Torso->GetWorldCenter() + b2Vec2(-1.6, -0.83), Torso->GetAngle());
-	LowLeftArm->SetGravityScale(0);
+	LowLeftArm->SetGravityScale(1);
 	//Brazo derecho
 	RightArm->SetTransform(Torso->GetWorldCenter() + b2Vec2(0.87, -0.83), Torso->GetAngle());
-	RightArm->SetGravityScale(0);
+	RightArm->SetGravityScale(1);
 	LowRightArm->SetTransform(Torso->GetWorldCenter() + b2Vec2(1.6, -0.83), Torso->GetAngle());
-	LowRightArm->SetGravityScale(0);
+	LowRightArm->SetGravityScale(1);
 	//Pierna izquierda
 	LeftLeg->SetTransform(Torso->GetWorldCenter() + b2Vec2(-0.3, 1.85), Torso->GetAngle() + deg2rad(0));
-	LeftLeg->SetGravityScale(0);
+	LeftLeg->SetGravityScale(1);
 	LowLeftLeg->SetTransform(Torso->GetWorldCenter() + b2Vec2(-0.3, 3.45), Torso->GetAngle() + deg2rad(0));
-	LowLeftLeg->SetGravityScale(0);
+	LowLeftLeg->SetGravityScale(1);
 	//Pierna derecha
 	RightLeg->SetTransform(Torso->GetWorldCenter() + b2Vec2(0.3, 1.85), Torso->GetAngle() + deg2rad(0));
-	RightLeg->SetGravityScale(0);
+	RightLeg->SetGravityScale(1);
 	LowRightLeg->SetTransform(Torso->GetWorldCenter() + b2Vec2(0.3, 3.45), Torso->GetAngle() + deg2rad(0));
-	LowRightLeg->SetGravityScale(0);
+	LowRightLeg->SetGravityScale(1);
 }
 
 //					| AUX |
