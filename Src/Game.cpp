@@ -41,7 +41,7 @@ void Game::InitCamera() {
 }
 
 void Game::InitPhysics() {
-	// Inicializamos el mundo con la gravedad por defecto
+	// Inicializa la gravedad del mundo
 	phyWorld = new b2World(b2Vec2(0.0f, 9.8f * 3));
 
 	// Creamos el renderer de debug y le seteamos las banderas para que dibuje TODO

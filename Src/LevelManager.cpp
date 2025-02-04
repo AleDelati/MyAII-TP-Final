@@ -4,7 +4,7 @@ LevelManager::LevelManager(b2World *wrld, int lvl) {
 	world = wrld;
 
 	current_lvl = lvl;
-	last_lvl = 3;
+	last_lvl = 4;
 
 	di_Blocks_GravSc = 2.0f;
 
@@ -56,6 +56,9 @@ void LevelManager::LoadLevel(int lvl) {
 	case 3:
 		lvl_3();
 		break;
+	case 4:
+		lvl_4();
+		break;
 	}
 	
 }
@@ -75,6 +78,22 @@ void LevelManager::ClearLevel() {
 		di_Blocks[i]->SetGravityScale(0);
 		di_Blocks[i]->SetLinearVelocity(b2Vec2(0, 0));
 		di_Blocks[i]->SetTransform(b2Vec2(75, -50), 0);
+	}
+
+	// Destruye los joints creados en los niveles
+
+	//Bloques estaticos
+	for (int i = 0; i < 100; i++) {
+		if (st_Blocks[i]->GetJointList() != nullptr) {
+			world->DestroyJoint(st_Blocks[i]->GetJointList()->joint);
+		}
+	}
+
+	//Bloques dinamicos
+	for (int i = 0; i < 25; i++) {
+		if (di_Blocks[i]->GetJointList() != nullptr) {
+			world->DestroyJoint(di_Blocks[i]->GetJointList()->joint);
+		}
 	}
 
 	//Salida
@@ -162,6 +181,29 @@ void LevelManager::lvl_3() {
 	spr_lvl_Exit.setPosition(Vector2f(88.5, 90));
 
 }
+
+void LevelManager::lvl_4() {
+
+	//Bloques estaticos
+	PlaceLine(b2Vec2(62.9f, 73), 0, 2, "Right", "st");
+	PlaceLine(b2Vec2(97.0f, 73), 2, 1, "Right", "st");
+	PlaceLine(b2Vec2(62.9f, 73), 3, 5, "Down", "st");
+
+	//Bloques dinamicos
+	PlaceLine(b2Vec2(72.9f, 73), 0, 5, "Right", "di");
+
+	//Joints
+	joints[0] = Box2DHelper::CreateDistanceJoint(world, st_Blocks[1], st_Blocks[1]->GetWorldCenter() + b2Vec2(2.5f, 0), di_Blocks[0], di_Blocks[0]->GetWorldCenter() + b2Vec2(-2.5f, 0), 0.5f, 1, 0.5f);
+	joints[6] = Box2DHelper::CreateDistanceJoint(world, di_Blocks[3], di_Blocks[3]->GetWorldCenter() + b2Vec2(2.5f, 0), st_Blocks[2], st_Blocks[2]->GetWorldCenter() + b2Vec2(-2.5f, 0), 0.5f, 1, 0.5f);
+	for (int i = 0; i < 4; i++) {
+		joints[i + 1] = Box2DHelper::CreateDistanceJoint(world, di_Blocks[i], di_Blocks[i]->GetWorldCenter() + b2Vec2(2.5f, 0), di_Blocks[i + 1], di_Blocks[i + 1]->GetWorldCenter() + b2Vec2(-2.5f, 0), 0.5f, 1, 0.5f);
+	}
+	
+	//Salida
+	spr_lvl_Exit.setPosition(Vector2f(81.0f, 90));
+
+}
+
 
 //					| AUX |
 

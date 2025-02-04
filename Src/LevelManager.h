@@ -24,6 +24,7 @@ public:
 	void lvl_1();
 	void lvl_2();
 	void lvl_3();
+	void lvl_4();
 
 	// Aux
 	void SetUpSprite(b2Body *body, Texture &txt, Sprite &spr);
@@ -43,6 +44,7 @@ private:
 	b2World *world;
 	b2Body *st_Blocks[100];
 	b2Body *di_Blocks[25];
+	b2DistanceJoint *joints[50];
 
 	// Texturas y Sprites
 	Texture txt_st_Blocks;

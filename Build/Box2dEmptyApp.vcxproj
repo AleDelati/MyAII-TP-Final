@@ -47,7 +47,7 @@
     <ProjectGuid>{96C674D7-9E95-4F51-966C-1A0545981942}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>M&amp;AII TP Final</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.20348.0</WindowsTargetPlatformVersion>
     <ProjectName>M&amp;AII TP Final</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -103,6 +103,7 @@
     <IncludePath>D:\Programacion\Proyectos Visual Studio\Recursos\SFML-2.6.1\include;D:\Programacion\Proyectos Visual Studio\Recursos\box2d\include;$(IncludePath)</IncludePath>
     <LibraryPath>D:\Programacion\Proyectos Visual Studio\Recursos\SFML-2.6.1\lib;D:\Programacion\Proyectos Visual Studio\Recursos\box2d\lib\vs2019\Debug;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)..\Bin\$(Configuration)\</OutDir>
+    <ExcludePath />
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
