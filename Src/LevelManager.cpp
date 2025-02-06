@@ -4,7 +4,7 @@ LevelManager::LevelManager(b2World *wrld, int lvl) {
 	world = wrld;
 
 	current_lvl = lvl;
-	last_lvl = 4;
+	last_lvl = 5;
 
 	di_Blocks_GravSc = 2.0f;
 
@@ -25,6 +25,12 @@ void LevelManager::InitBlocks() {
 		di_Blocks[i] = Box2DHelper::CreateRectangularDynamicBody(world, 5, 5, 0.05f, 1.0f, 0.25f);
 		di_Blocks[i]->SetGravityScale(di_Blocks_GravSc);		// Para personalizar como afecta la gravedad a los bloques dinamicos
 	}
+
+	// Inicializa las plataformas
+	for (int i = 0; i < 10; i++) {
+		platforms[i] = Box2DHelper::CreateRectangularDynamicBody(world, 15, 5, 0.05f, 1.0f, 0.25f);
+		platforms[i]->SetGravityScale(0);
+	}
 }
 
 void LevelManager::InitSprites() {
@@ -39,6 +45,10 @@ void LevelManager::InitSprites() {
 	spr_lvl_Exit.setTexture(txt_lvl_Exit);
 	spr_lvl_Exit.setOrigin(txt_lvl_Exit.getSize().x / 2, txt_lvl_Exit.getSize().y / 2);
 	spr_lvl_Exit.setScale(Vector2f(.2997f, .2997f));
+
+	txt_platform.loadFromFile("Sprites/lvl_Sprites/lvl_Platform.png");
+	for (int i = 0; i < 10; i++){ SetUpSprite(platforms[i], txt_platform, spr_platforms[i]); }
+
 }
 
 void LevelManager::LoadLevel(int lvl) {
@@ -58,6 +68,9 @@ void LevelManager::LoadLevel(int lvl) {
 		break;
 	case 4:
 		lvl_4();
+		break;
+	case 5:
+		lvl_5();
 		break;
 	}
 	
@@ -80,6 +93,13 @@ void LevelManager::ClearLevel() {
 		di_Blocks[i]->SetTransform(b2Vec2(75, -50), 0);
 	}
 
+	//Plataformas
+	for (int i = 0; i < 10; i++) {
+		platforms[i]->SetGravityScale(0);
+		platforms[i]->SetLinearVelocity(b2Vec2(0, 0));
+		platforms[i]->SetTransform(b2Vec2(90, -50), 0);
+	}
+
 	// Destruye los joints creados en los niveles
 
 	//Bloques estaticos
@@ -93,6 +113,13 @@ void LevelManager::ClearLevel() {
 	for (int i = 0; i < 25; i++) {
 		if (di_Blocks[i]->GetJointList() != nullptr) {
 			world->DestroyJoint(di_Blocks[i]->GetJointList()->joint);
+		}
+	}
+
+	//Plataformas
+	for (int i = 0; i < 10; i++) {
+		if (platforms[i]->GetJointList() != nullptr) {
+			world->DestroyJoint(platforms[i]->GetJointList()->joint);
 		}
 	}
 
@@ -124,8 +151,16 @@ void LevelManager::DrawLevel(RenderWindow &wnd) {
 		wnd.draw(spr_di_Blocks[i]);
 	}
 
+	// Dibuja las plataformas
+	for (int i = 0; i < 10; i++) {
+		spr_platforms[i].setPosition(platforms[i]->GetPosition().x, platforms[i]->GetPosition().y);
+		spr_platforms[i].setRotation(rad2deg(platforms[i]->GetAngle()));
+		wnd.draw(spr_platforms[i]);
+	}
+
 	// Dibuja la salida
 	wnd.draw(spr_lvl_Exit);
+
 }
 
 //					| Levels |
@@ -193,10 +228,10 @@ void LevelManager::lvl_4() {
 	PlaceLine(b2Vec2(72.9f, 73), 0, 5, "Right", "di");
 
 	//Joints
-	joints[0] = Box2DHelper::CreateDistanceJoint(world, st_Blocks[1], st_Blocks[1]->GetWorldCenter() + b2Vec2(2.5f, 0), di_Blocks[0], di_Blocks[0]->GetWorldCenter() + b2Vec2(-2.5f, 0), 0.5f, 1, 0.5f);
-	joints[6] = Box2DHelper::CreateDistanceJoint(world, di_Blocks[3], di_Blocks[3]->GetWorldCenter() + b2Vec2(2.5f, 0), st_Blocks[2], st_Blocks[2]->GetWorldCenter() + b2Vec2(-2.5f, 0), 0.5f, 1, 0.5f);
+	d_joints[0] = Box2DHelper::CreateDistanceJoint(world, st_Blocks[1], st_Blocks[1]->GetWorldCenter() + b2Vec2(2.5f, 0), di_Blocks[0], di_Blocks[0]->GetWorldCenter() + b2Vec2(-2.5f, 0), 0.5f, 20, 0.75f);
+	d_joints[6] = Box2DHelper::CreateDistanceJoint(world, di_Blocks[3], di_Blocks[3]->GetWorldCenter() + b2Vec2(2.5f, 0), st_Blocks[2], st_Blocks[2]->GetWorldCenter() + b2Vec2(-2.5f, 0), 0.5f, 20, 0.75f);
 	for (int i = 0; i < 4; i++) {
-		joints[i + 1] = Box2DHelper::CreateDistanceJoint(world, di_Blocks[i], di_Blocks[i]->GetWorldCenter() + b2Vec2(2.5f, 0), di_Blocks[i + 1], di_Blocks[i + 1]->GetWorldCenter() + b2Vec2(-2.5f, 0), 0.5f, 1, 0.5f);
+		d_joints[i + 1] = Box2DHelper::CreateDistanceJoint(world, di_Blocks[i], di_Blocks[i]->GetWorldCenter() + b2Vec2(2.5f, 0), di_Blocks[i + 1], di_Blocks[i + 1]->GetWorldCenter() + b2Vec2(-2.5f, 0), 0.5f, 20, 0.75f);
 	}
 	
 	//Salida
@@ -204,6 +239,16 @@ void LevelManager::lvl_4() {
 
 }
 
+void LevelManager::lvl_5() {
+
+	st_Blocks[0]->SetTransform(b2Vec2(39, 50), 0);
+	st_Blocks[1]->SetTransform(b2Vec2(61, 50), 0);
+
+	platforms[0]->SetTransform(b2Vec2(50, 50), 0);
+
+	r_joints[0] = Box2DHelper::CreateRevoluteJoint(world, st_Blocks[0], b2Vec2(50, 50), platforms[0], deg2rad(-60), deg2rad(60), 1, 10, false, true);
+
+}
 
 //					| AUX |
 
