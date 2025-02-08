@@ -83,6 +83,8 @@ void LevelManager::ChangeLevel(int lvl) {
 }
 
 void LevelManager::ClearLevel() {
+	next_st = 0, next_di = 0;
+
 	//Bloques estaticos
 	for (int i = 0; i < 100; i++) { st_Blocks[i]->SetTransform(b2Vec2(25, -50), 0); }
 
@@ -167,7 +169,7 @@ void LevelManager::DrawLevel(RenderWindow &wnd) {
 void LevelManager::lvl_0() {
 	
 	//Bloques estaticos
-	PlaceLine(b2Vec2(97, 51), 0, 5, "Left", "st");
+	PlaceLine(b2Vec2(97, 51), 5, "Left", "st");
 
 	//Salida
 	spr_lvl_Exit.setPosition(Vector2f(87.5, 44));
@@ -177,8 +179,8 @@ void LevelManager::lvl_0() {
 void LevelManager::lvl_1() {
 
 	//Bloques estaticos
-	PlaceLine(b2Vec2(50, 92), 0, 7, "Up", "st");
-	PlaceLine(b2Vec2(50, 32), 7, 6, "Up", "st");
+	PlaceLine(b2Vec2(50, 92), 7, "Up", "st");
+	PlaceLine(b2Vec2(50, 32), 6, "Up", "st");
 
 	//Bloques dinamicos
 
@@ -190,11 +192,11 @@ void LevelManager::lvl_1() {
 void LevelManager::lvl_2() {
 
 	//Bloques estaticos
-	PlaceLine(b2Vec2(50, 92), 0, 7, "Up", "st");
-	PlaceLine(b2Vec2(50, 32), 7, 6, "Up", "st");
+	PlaceLine(b2Vec2(50, 92), 7, "Up", "st");
+	PlaceLine(b2Vec2(50, 32), 6, "Up", "st");
 
 	//Bloques dinamicos
-	PlaceLine(b2Vec2(50, 57), 0, 5, "Up", "di");
+	PlaceLine(b2Vec2(50, 57), 5, "Up", "di");
 
 	//Salida
 	spr_lvl_Exit.setPosition(Vector2f(75, 90));
@@ -204,13 +206,13 @@ void LevelManager::lvl_2() {
 void LevelManager::lvl_3() {
 
 	//Bloques estaticos
-	PlaceLine(b2Vec2(25, 92), 0, 4, "Up", "st");
-	PlaceLine(b2Vec2(25, 52), 4, 10, "Up", "st");
-	PlaceLine(b2Vec2(75, 92), 14, 14, "Up", "st");
+	PlaceLine(b2Vec2(25, 92), 4, "Up", "st");
+	PlaceLine(b2Vec2(25, 52), 10, "Up", "st");
+	PlaceLine(b2Vec2(75, 92), 14, "Up", "st");
 
 	//Bloques dinamicos
-	PlaceLine(b2Vec2(25, 72), 0, 4, "Up", "di");
-	PlaceLine(b2Vec2(75, 22), 4, 4, "Up", "di");
+	PlaceLine(b2Vec2(25, 72), 4, "Up", "di");
+	PlaceLine(b2Vec2(75, 22), 4, "Up", "di");
 
 	//Salida
 	spr_lvl_Exit.setPosition(Vector2f(88.5, 90));
@@ -220,12 +222,12 @@ void LevelManager::lvl_3() {
 void LevelManager::lvl_4() {
 
 	//Bloques estaticos
-	PlaceLine(b2Vec2(62.9f, 73), 0, 2, "Right", "st");
-	PlaceLine(b2Vec2(97.0f, 73), 2, 1, "Right", "st");
-	PlaceLine(b2Vec2(62.9f, 73), 3, 5, "Down", "st");
+	PlaceLine(b2Vec2(62.9f, 73), 2, "Right", "st");
+	PlaceLine(b2Vec2(97.0f, 73), 1, "Right", "st");
+	PlaceLine(b2Vec2(62.9f, 73), 5, "Down", "st");
 
 	//Bloques dinamicos
-	PlaceLine(b2Vec2(72.9f, 73), 0, 5, "Right", "di");
+	PlaceLine(b2Vec2(72.9f, 73), 5, "Right", "di");
 
 	//Joints
 	d_joints[0] = Box2DHelper::CreateDistanceJoint(world, st_Blocks[1], st_Blocks[1]->GetWorldCenter() + b2Vec2(2.5f, 0), di_Blocks[0], di_Blocks[0]->GetWorldCenter() + b2Vec2(-2.5f, 0), 0.5f, 20, 0.75f);
@@ -241,13 +243,17 @@ void LevelManager::lvl_4() {
 
 void LevelManager::lvl_5() {
 
-	st_Blocks[0]->SetTransform(b2Vec2(39, 50), 0);
-	st_Blocks[1]->SetTransform(b2Vec2(61, 50), 0);
+	PlaceLine(b2Vec2(39, 30), 3, "Left", "St");
 
-	platforms[0]->SetTransform(b2Vec2(50, 50), 0);
+	PlaceLine(b2Vec2(61, 30), 3, "Right", "St");
 
-	r_joints[0] = Box2DHelper::CreateRevoluteJoint(world, st_Blocks[0], b2Vec2(50, 50), platforms[0], deg2rad(-60), deg2rad(60), 1, 10, false, true);
+	platforms[0]->SetTransform(b2Vec2(50, 30), 0);
+	r_joints[0] = Box2DHelper::CreateRevoluteJoint(world, st_Blocks[0], b2Vec2(50, 30), platforms[0], deg2rad(-60), deg2rad(60), 1, 10, false, true);
 
+	platforms[1]->SetTransform(b2Vec2(40, 50), 0);
+
+	//Salida
+	spr_lvl_Exit.setPosition(Vector2f(50.0f, 90));
 }
 
 //					| AUX |
@@ -294,56 +300,67 @@ float LevelManager::rad2deg(float rad) {
 }
 
 // Crea lineas de bloques para facilitar la construccion de niveles
-void LevelManager::PlaceLine(b2Vec2 pos, int from, int lenght, String dir, String block_Type) {
+void LevelManager::PlaceLine(b2Vec2 pos, int lenght, String dir, String block_Type) {
+	
+	while (st_Blocks[next_st]->GetPosition().y > 0 && st_Blocks[next_st]->GetPosition().y < 100) {
+		next_st++;
+	}
+
+	while (di_Blocks[next_di]->GetGravityScale() != 0) {
+		next_di++;
+	}
 
 	if (block_Type == "st" || block_Type == "St") {		//Bloques estaticos
-		st_Blocks[from]->SetTransform(pos, 0);
+		st_Blocks[next_st]->SetTransform(pos, 0);
 
 		if (dir == "Up" || dir == "up") {
-			for (int i = from + 1; i < from + lenght; i++) {
+			for (int i = next_st + 1; i < next_st + lenght; i++) {
 				st_Blocks[i]->SetTransform(st_Blocks[i - 1]->GetPosition() + b2Vec2(0, -5), 0);
 			}
 		}
 		else if (dir == "Down" || dir == "down") {
-			for (int i = from + 1; i < from + lenght; i++) {
+			for (int i = next_st + 1; i < next_st + lenght; i++) {
 				st_Blocks[i]->SetTransform(st_Blocks[i - 1]->GetPosition() + b2Vec2(0, 5), 0);
 			}
 		}
 		else if (dir == "Left" || dir == "left") {
-			for (int i = from + 1; i < from + lenght; i++) {
+			for (int i = next_st + 1; i < next_st + lenght; i++) {
 				st_Blocks[i]->SetTransform(st_Blocks[i - 1]->GetPosition() + b2Vec2(-5, 0), 0);
 			}
 		}
 		else if (dir == "Right" || dir == "right") {
-			for (int i = from + 1; i < from + lenght; i++) {
+			for (int i = next_st + 1; i < next_st + lenght; i++) {
 				st_Blocks[i]->SetTransform(st_Blocks[i - 1]->GetPosition() + b2Vec2(5, 0), 0);
 			}
 		}
 	}
 	else if (block_Type == "di" || block_Type == "Di") {	//Bloques dinamicos
-		di_Blocks[from]->SetTransform(pos, 0);
-		for (int i = 0; i < lenght; i++) { di_Blocks[i]->SetGravityScale(di_Blocks_GravSc); }
+		di_Blocks[next_di]->SetTransform(pos, 0);
+		for (int i = next_di; i < next_di + lenght; i++) { di_Blocks[i]->SetGravityScale(di_Blocks_GravSc); }
 
 		if (dir == "Up" || dir == "up") {
-			for (int i = from + 1; i < from + lenght; i++) {
+			for (int i = next_di + 1; i < next_di + lenght; i++) {
 				di_Blocks[i]->SetTransform(di_Blocks[i - 1]->GetPosition() + b2Vec2(0, -5), 0);
 			}
 		}
 		else if (dir == "Down" || dir == "down") {
-			for (int i = from + 1; i < from + lenght; i++) {
+			for (int i = next_di + 1; i < next_di + lenght; i++) {
 				di_Blocks[i]->SetTransform(di_Blocks[i - 1]->GetPosition() + b2Vec2(0, 5), 0);
 			}
 		}
 		else if (dir == "Left" || dir == "left") {
-			for (int i = from + 1; i < from + lenght; i++) {
+			for (int i = next_di + 1; i < next_di + lenght; i++) {
 				di_Blocks[i]->SetTransform(di_Blocks[i - 1]->GetPosition() + b2Vec2(-5, 0), 0);
 			}
 		}
 		else if (dir == "Right" || dir == "right") {
-			for (int i = from + 1; i < from + lenght; i++) {
+			for (int i = next_di + 1; i < next_di + lenght; i++) {
 				di_Blocks[i]->SetTransform(di_Blocks[i - 1]->GetPosition() + b2Vec2(5, 0), 0);
 			}
 		}
 	}
+}
+
+void LevelManager::PlaceBlock(b2Vec2 Pos, String block_type) {
 
 }

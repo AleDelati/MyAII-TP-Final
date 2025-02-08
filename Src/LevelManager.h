@@ -34,11 +34,12 @@ public:
 	float deg2rad(float deg);
 	float rad2deg(float rad);
 
-	void PlaceLine(b2Vec2 pos, int from, int lenght, String dir, String block_Type);
+	void PlaceLine(b2Vec2 pos, int lenght, String dir, String block_Type);
+	void PlaceBlock(b2Vec2 pos, String block_type);
 
 private:
 
-	int current_lvl, last_lvl;
+	int current_lvl, last_lvl, next_st, next_di;
 	float di_Blocks_GravSc;
 
 	//
