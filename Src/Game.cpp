@@ -106,12 +106,12 @@ void Game::Loop() {
 
 void Game::DrawGame() {
 
+	// Dibuja el nivel actual
+	lvl_Manager->DrawLevel(*wnd);
+
 	// Dibuja los bordes del nivel
 	for (int i = 0; i < 2; i++) { wnd->draw(spr_Side_Edge[i]); }
 	for (int i = 0; i < 2; i++) { wnd->draw(spr_UpDown_Edge[i]); }
-
-	// Dibuja el nivel actual
-	lvl_Manager->DrawLevel(*wnd);
 
 	// Dibuja los textos
 	ui_Manager->Draw_Text(*wnd, lvl_Manager->GetCurrentLevel(), rag_Shot);
@@ -135,8 +135,8 @@ void Game::CheckCollisions() {
 	// Si un ragdoll entra en la zona de salida del nivel
 	for (int i = 0; i < rag_ReadyToDraw; i++) {
 		if (lvl_Manager->GetExitBounds().contains(rag_i[i]->GetPosition().x, rag_i[i]->GetPosition().y)) {
-			lvl_Manager->NextLevel();
 			ResetRagdolls();
+			lvl_Manager->NextLevel();
 		}
 	}
 }
@@ -192,7 +192,7 @@ void Game::DoEvents() {
 						rag_Instantiated[rag_Count] = true;
 
 						// Calcula la posicion de la punta del cañon y lo spawnea en esa posicion
-						rag_i[rag_Count] = new Ragdoll(phyWorld, Vector2f(canon->GetPosition().x + 6 * cos(canon->GetAngle()), canon->GetPosition().y + 6 * sin(canon->GetAngle())), 0);
+						rag_i[rag_Count] = new Ragdoll(phyWorld, Vector2f(canon->GetPosition().x + 7 * cos(canon->GetAngle()), canon->GetPosition().y + 7 * sin(canon->GetAngle())), 0);
 
 						// Calcula la direccion en la cual aplicar la fuerza al ragdoll disparado
 						rag_i[rag_Count]->ApplyForce({ mouse_PosCoord.x - canon->GetPosition().x, mouse_PosCoord.y - canon->GetPosition().y });
@@ -202,7 +202,7 @@ void Game::DoEvents() {
 					else {
 						
 						// Calcula la posicion de la punta del cañon y lo resetea en esa posicion
-						rag_i[rag_Count]->Reset(Vector2f(canon->GetPosition().x + 6 * cos(canon->GetAngle()), canon->GetPosition().y + 6 * sin(canon->GetAngle())));
+						rag_i[rag_Count]->Reset(Vector2f(canon->GetPosition().x + 7 * cos(canon->GetAngle()), canon->GetPosition().y + 7 * sin(canon->GetAngle())));
 
 						// Calcula la direccion en la cual aplicar la fuerza al ragdoll disparado
 						rag_i[rag_Count]->ApplyForce({ mouse_PosCoord.x - canon->GetPosition().x, mouse_PosCoord.y - canon->GetPosition().y });
@@ -265,7 +265,7 @@ void Game::UpdateCameraPos(b2Vec2 pos) {
 
 void Game::ResetRagdolls() {
 	//Reinicia los ragdolls
-	Vector2f resetOffset = Vector2f(0, -200);
+	Vector2f resetOffset = Vector2f(0, 200);
 	for (int i = 0; i <= rag_ReadyToDraw; i++) {
 		if (rag_Instantiated[i] == true) { 
 			rag_i[i]->Disable(resetOffset);

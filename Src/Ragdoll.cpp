@@ -4,36 +4,36 @@ Ragdoll::Ragdoll(b2World *world, Vector2f pos, float angle) {
 	disabled = false;
 	// Crea los componentes del ragdoll
 	//Torso
-	Torso = Box2DHelper::CreateRectangularDynamicBody(world, 1, 2, 1, 1, 0.25);
+	Torso = Box2DHelper::CreateRectangularDynamicBody(world, 1, 2, 1, 1, 0.5);
 	Torso->SetTransform(b2Vec2(pos.x, pos.y), deg2rad(angle));
 
 	//Cabeza
-	Head = Box2DHelper::CreateRectangularDynamicBody(world, 0.5, 0.5, 0.5f, 1, 0.25);
+	Head = Box2DHelper::CreateRectangularDynamicBody(world, 0.5, 0.5, 0.5f, 1, 0.5);
 	Head->SetTransform(Torso->GetWorldCenter() + b2Vec2(0, -1.35), Torso->GetAngle());
 	
 	//Brazo Izquierdo
-	LeftArm = Box2DHelper::CreateRectangularDynamicBody(world, .5, 0.3, 0.5f, 1, 0.25);
+	LeftArm = Box2DHelper::CreateRectangularDynamicBody(world, .5, 0.3, 0.5f, 1, 0.5);
 	LeftArm->SetTransform(Torso->GetWorldCenter() + b2Vec2(-0.87, -0.83), Torso->GetAngle());
 
-	LowLeftArm = Box2DHelper::CreateRectangularDynamicBody(world, .75, 0.3, 0.5f, 1, 0.25);
+	LowLeftArm = Box2DHelper::CreateRectangularDynamicBody(world, .75, 0.3, 0.5f, 1, 0.5);
 	LowLeftArm->SetTransform(Torso->GetWorldCenter() + b2Vec2(-1.6, -0.83), Torso->GetAngle());
 	//Brazo Derecho
-	RightArm = Box2DHelper::CreateRectangularDynamicBody(world, .5, 0.3, 1, 0.5f, 0.25);
+	RightArm = Box2DHelper::CreateRectangularDynamicBody(world, .5, 0.3, 1, 0.5f, 0.5);
 	RightArm->SetTransform(Torso->GetWorldCenter() + b2Vec2(0.87, -0.83), Torso->GetAngle());
 
-	LowRightArm = Box2DHelper::CreateRectangularDynamicBody(world, .75, 0.3, 1, 0.5f, 0.25);
+	LowRightArm = Box2DHelper::CreateRectangularDynamicBody(world, .75, 0.3, 1, 0.5f, 0.5);
 	LowRightArm->SetTransform(Torso->GetWorldCenter() + b2Vec2(1.6, -0.83), Torso->GetAngle());
 	//Pierna Izquierda
-	LeftLeg = Box2DHelper::CreateRectangularDynamicBody(world, 0.4, 1.5, 1, 0.5f, 0.25);
+	LeftLeg = Box2DHelper::CreateRectangularDynamicBody(world, 0.4, 1.5, 1, 0.5f, 0.5);
 	LeftLeg->SetTransform(Torso->GetWorldCenter() + b2Vec2(-0.3, 1.85), Torso->GetAngle() + deg2rad(0));
 
-	LowLeftLeg = Box2DHelper::CreateRectangularDynamicBody(world, 0.4, 1.5, 1, 0.5f, 0.25);
+	LowLeftLeg = Box2DHelper::CreateRectangularDynamicBody(world, 0.4, 1.5, 1, 0.5f, 0.5);
 	LowLeftLeg->SetTransform(Torso->GetWorldCenter() + b2Vec2(-0.3, 3.45), Torso->GetAngle() + deg2rad(0));
 	//Pierna Derecha
-	RightLeg = Box2DHelper::CreateRectangularDynamicBody(world, 0.4, 1.5, 1, 0.5f, 0.25);
+	RightLeg = Box2DHelper::CreateRectangularDynamicBody(world, 0.4, 1.5, 1, 0.5f, 0.5);
 	RightLeg->SetTransform(Torso->GetWorldCenter() + b2Vec2(0.3, 1.85), Torso->GetAngle() + deg2rad(0));
 
-	LowRightLeg = Box2DHelper::CreateRectangularDynamicBody(world, 0.4, 1.5, 1, 0.5f, 0.25);
+	LowRightLeg = Box2DHelper::CreateRectangularDynamicBody(world, 0.4, 1.5, 1, 0.5f, 0.5);
 	LowRightLeg->SetTransform(Torso->GetWorldCenter() + b2Vec2(0.3, 3.45), Torso->GetAngle() + deg2rad(0));
 
 	//Inicializa los Sprites
@@ -171,31 +171,39 @@ void Ragdoll::Disable(Vector2f Pos) {
 	Torso->SetTransform(b2Vec2(Pos.x, Pos.y), 0);
 	Torso->SetLinearVelocity(b2Vec2(0, 0));
 	Torso->SetGravityScale(0);
+	Torso->SetEnabled(false);
 	//Cabeza
 	Head->SetTransform(Torso->GetWorldCenter() + b2Vec2(0, -1.35), Torso->GetAngle());
 	Head->SetLinearVelocity(b2Vec2(0, 0));
 	Head->SetGravityScale(0);
+	Head->SetEnabled(false);
 	//Brazo izquierdo
 	LeftArm->SetTransform(Torso->GetWorldCenter() + b2Vec2(-0.87, -0.83), Torso->GetAngle());
 	LeftArm->SetLinearVelocity(b2Vec2(0, 0));
 	LeftArm->SetGravityScale(0);
+	LeftArm->SetEnabled(false);
 	LowLeftArm->SetTransform(Torso->GetWorldCenter() + b2Vec2(-1.6, -0.83), Torso->GetAngle());
 	LowLeftArm->SetLinearVelocity(b2Vec2(0, 0));
 	LowLeftArm->SetGravityScale(0);
+	LowLeftArm->SetEnabled(false);
 	//Brazo derecho
 	RightArm->SetTransform(Torso->GetWorldCenter() + b2Vec2(0.87, -0.83), Torso->GetAngle());
 	RightArm->SetLinearVelocity(b2Vec2(0, 0));
 	RightArm->SetGravityScale(0);
+	RightArm->SetEnabled(false);
 	LowRightArm->SetTransform(Torso->GetWorldCenter() + b2Vec2(1.6, -0.83), Torso->GetAngle());
 	LowRightArm->SetLinearVelocity(b2Vec2(0, 0));
 	LowRightArm->SetGravityScale(0);
+	LowRightArm->SetEnabled(false);
 	//Pierna izquierda
 	LeftLeg->SetTransform(Torso->GetWorldCenter() + b2Vec2(-0.3, 1.85), Torso->GetAngle() + deg2rad(0));
 	LeftLeg->SetLinearVelocity(b2Vec2(0, 0));
 	LeftLeg->SetGravityScale(0);
+	LeftLeg->SetEnabled(false);
 	LowLeftLeg->SetTransform(Torso->GetWorldCenter() + b2Vec2(-0.3, 3.45), Torso->GetAngle() + deg2rad(0));
 	LowLeftLeg->SetLinearVelocity(b2Vec2(0, 0));
 	LowLeftLeg->SetGravityScale(0);
+	LowLeftLeg->SetEnabled(false);
 	//Pierna derecha
 	RightLeg->SetTransform(Torso->GetWorldCenter() + b2Vec2(0.3, 1.85), Torso->GetAngle() + deg2rad(0));
 	RightLeg->SetLinearVelocity(b2Vec2(0, 0));
@@ -203,6 +211,7 @@ void Ragdoll::Disable(Vector2f Pos) {
 	LowRightLeg->SetTransform(Torso->GetWorldCenter() + b2Vec2(0.3, 3.45), Torso->GetAngle() + deg2rad(0));
 	LowRightLeg->SetLinearVelocity(b2Vec2(0, 0));
 	LowRightLeg->SetGravityScale(0);
+	LowRightLeg->SetEnabled(false);
 }
 
 void Ragdoll::Reset(Vector2f pos) {
@@ -211,33 +220,42 @@ void Ragdoll::Reset(Vector2f pos) {
 	//Torso
 	Torso->SetTransform(b2Vec2(pos.x, pos.y), 0);
 	Torso->SetGravityScale(1);
+	Torso->SetEnabled(true);
 	//Cabeza
 	Head->SetTransform(Torso->GetWorldCenter() + b2Vec2(0, -1.35), Torso->GetAngle());
 	Head->SetGravityScale(1);
+	Head->SetEnabled(true);
 	//Brazo izquierdo
 	LeftArm->SetTransform(Torso->GetWorldCenter() + b2Vec2(-0.87, -0.83), Torso->GetAngle());
 	LeftArm->SetGravityScale(1);
+	LeftArm->SetEnabled(true);
 	LowLeftArm->SetTransform(Torso->GetWorldCenter() + b2Vec2(-1.6, -0.83), Torso->GetAngle());
 	LowLeftArm->SetGravityScale(1);
+	LowLeftArm->SetEnabled(true);
 	//Brazo derecho
 	RightArm->SetTransform(Torso->GetWorldCenter() + b2Vec2(0.87, -0.83), Torso->GetAngle());
 	RightArm->SetGravityScale(1);
+	RightArm->SetEnabled(true);
 	LowRightArm->SetTransform(Torso->GetWorldCenter() + b2Vec2(1.6, -0.83), Torso->GetAngle());
 	LowRightArm->SetGravityScale(1);
+	LowRightArm->SetEnabled(true);
 	//Pierna izquierda
 	LeftLeg->SetTransform(Torso->GetWorldCenter() + b2Vec2(-0.3, 1.85), Torso->GetAngle() + deg2rad(0));
 	LeftLeg->SetGravityScale(1);
+	LeftLeg->SetEnabled(true);
 	LowLeftLeg->SetTransform(Torso->GetWorldCenter() + b2Vec2(-0.3, 3.45), Torso->GetAngle() + deg2rad(0));
 	LowLeftLeg->SetGravityScale(1);
+	LowLeftLeg->SetEnabled(true);
 	//Pierna derecha
 	RightLeg->SetTransform(Torso->GetWorldCenter() + b2Vec2(0.3, 1.85), Torso->GetAngle() + deg2rad(0));
 	RightLeg->SetGravityScale(1);
+	RightLeg->SetEnabled(true);
 	LowRightLeg->SetTransform(Torso->GetWorldCenter() + b2Vec2(0.3, 3.45), Torso->GetAngle() + deg2rad(0));
 	LowRightLeg->SetGravityScale(1);
+	LowRightLeg->SetEnabled(true);
 }
 
 //					| AUX |
-
 b2Vec2 Ragdoll::GetPosition() {
 	return Torso->GetPosition();
 }

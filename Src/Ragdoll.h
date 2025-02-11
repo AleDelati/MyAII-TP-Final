@@ -21,6 +21,7 @@ public:
 
 	// Aux
 	b2Vec2 GetPosition();
+
 	void SetUpSprite(b2Body *body, Sprite &spr);
 
 	float deg2rad(float deg);

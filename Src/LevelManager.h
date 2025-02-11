@@ -35,7 +35,7 @@ public:
 	float rad2deg(float rad);
 
 	void PlaceLine(b2Vec2 pos, int lenght, String dir, String block_Type);
-	void PlaceBlock(b2Vec2 pos, String block_type);
+	void PlaceBlock(b2Vec2 pos, String block_Type);
 
 private:
 

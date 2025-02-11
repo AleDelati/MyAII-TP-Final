@@ -28,7 +28,7 @@ void LevelManager::InitBlocks() {
 
 	// Inicializa las plataformas
 	for (int i = 0; i < 10; i++) {
-		platforms[i] = Box2DHelper::CreateRectangularDynamicBody(world, 15, 5, 0.05f, 1.0f, 0.25f);
+		platforms[i] = Box2DHelper::CreateRectangularDynamicBody(world, 13.5f, 5, 0.05f, 1.0f, 0.25f);
 		platforms[i]->SetGravityScale(0);
 	}
 }
@@ -139,6 +139,10 @@ void LevelManager::ResetLevel() {
 }
 
 void LevelManager::DrawLevel(RenderWindow &wnd) {
+
+	// Dibuja la salida
+	wnd.draw(spr_lvl_Exit);
+
 	// Dibuja los bloques estaticos
 	for (int i = 0; i < 100; i++) {
 		spr_st_Blocks[i].setPosition(st_Blocks[i]->GetPosition().x, st_Blocks[i]->GetPosition().y);
@@ -159,10 +163,6 @@ void LevelManager::DrawLevel(RenderWindow &wnd) {
 		spr_platforms[i].setRotation(rad2deg(platforms[i]->GetAngle()));
 		wnd.draw(spr_platforms[i]);
 	}
-
-	// Dibuja la salida
-	wnd.draw(spr_lvl_Exit);
-
 }
 
 //					| Levels |
@@ -243,14 +243,28 @@ void LevelManager::lvl_4() {
 
 void LevelManager::lvl_5() {
 
-	PlaceLine(b2Vec2(39, 30), 3, "Left", "St");
+	//Left Side
+	PlaceLine(b2Vec2(40, 30), 3, "Left", "St");
+	PlaceLine(b2Vec2(30, 35), 4, "Down", "St");
+	PlaceLine(b2Vec2(40, 65), 7, "Down", "St");
+	PlaceLine(b2Vec2(25, 50), 10, "Down", "St");
 
-	PlaceLine(b2Vec2(61, 30), 3, "Right", "St");
+	//Right Side
+	PlaceLine(b2Vec2(60, 30), 3, "Right", "St");
+	PlaceLine(b2Vec2(70, 35), 4, "Down", "St");
+	PlaceLine(b2Vec2(60, 65), 7, "Down", "St");
+	PlaceLine(b2Vec2(75, 50), 10, "Down", "St");
+
+	PlaceBlock(b2Vec2(50, 50), "St");
 
 	platforms[0]->SetTransform(b2Vec2(50, 30), 0);
 	r_joints[0] = Box2DHelper::CreateRevoluteJoint(world, st_Blocks[0], b2Vec2(50, 30), platforms[0], deg2rad(-60), deg2rad(60), 1, 10, false, true);
 
 	platforms[1]->SetTransform(b2Vec2(40, 50), 0);
+	r_joints[1] = Box2DHelper::CreateRevoluteJoint(world, st_Blocks[0], b2Vec2(40, 50), platforms[1], deg2rad(0), deg2rad(0), -3, 1000, true, false);
+
+	platforms[2]->SetTransform(b2Vec2(60, 50), 0);
+	r_joints[2] = Box2DHelper::CreateRevoluteJoint(world, st_Blocks[0], b2Vec2(60, 50), platforms[2], deg2rad(0), deg2rad(0), 3, 1000, true, false);
 
 	//Salida
 	spr_lvl_Exit.setPosition(Vector2f(50.0f, 90));
@@ -361,6 +375,22 @@ void LevelManager::PlaceLine(b2Vec2 pos, int lenght, String dir, String block_Ty
 	}
 }
 
-void LevelManager::PlaceBlock(b2Vec2 Pos, String block_type) {
+
+void LevelManager::PlaceBlock(b2Vec2 Pos, String block_Type) {
+
+	while (st_Blocks[next_st]->GetPosition().y > 0 && st_Blocks[next_st]->GetPosition().y < 100) {
+		next_st++;
+	}
+
+	while (di_Blocks[next_di]->GetGravityScale() != 0) {
+		next_di++;
+	}
+
+	if (block_Type == "st" || block_Type == "St") {
+		st_Blocks[next_st]->SetTransform(Pos, 0);
+	}
+	else if (block_Type == "di" || block_Type == "Di") {
+		di_Blocks[next_di]->SetTransform(Pos, 0);
+	}
 
 }
