@@ -132,11 +132,27 @@ void Game::UpdatePhysics() {
 }
 
 void Game::CheckCollisions() {
+	
 	// Si un ragdoll entra en la zona de salida del nivel
 	for (int i = 0; i < rag_ReadyToDraw; i++) {
 		if (lvl_Manager->GetExitBounds().contains(rag_i[i]->GetPosition().x, rag_i[i]->GetPosition().y)) {
-			ResetRagdolls();
-			lvl_Manager->NextLevel();
+
+			ec_Ragdoll = i;
+
+			// Configura un retraso de 3 segundos antes de ejecutar el paso de nivel
+			if (ec_bool == false) { ec_bool = true; ec_Cooldown = clock_1->getElapsedTime().asSeconds() + 3; ec_Ragdoll_Last = i; }
+
+			if (clock_1->getElapsedTime().asSeconds() > ec_Cooldown) {  // Espera el retraso antes de pasar de nivel
+
+				if (ec_Ragdoll == ec_Ragdoll_Last) {
+					ResetRagdolls();
+					lvl_Manager->NextLevel();
+					ec_bool = false;
+				}
+				else {
+					ec_bool = false;
+				}
+			}
 		}
 	}
 }

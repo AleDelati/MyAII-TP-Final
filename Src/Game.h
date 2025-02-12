@@ -46,6 +46,11 @@ class Game {
 		int rag_Count, rag_ReadyToDraw, rag_Shot;
 		bool rag_Instantiated[50];
 
+		//Exit Check
+		int ec_Ragdoll = -1, ec_Ragdoll_Last = -1;
+		float ec_Cooldown;
+		bool ec_bool = false;
+
 		Ragdoll* rag_i[50];
 
 		//					-| Texturas y Sprites |-
