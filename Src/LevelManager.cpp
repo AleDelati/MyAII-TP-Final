@@ -4,9 +4,7 @@ LevelManager::LevelManager(b2World *wrld, int lvl) {
 	world = wrld;
 
 	current_lvl = lvl;
-	last_lvl = 5;
-
-	di_Blocks_GravSc = 2.0f;
+	last_lvl = 6;
 
 	InitBlocks();
 	InitSprites();
@@ -29,7 +27,7 @@ void LevelManager::InitBlocks() {
 	// Inicializa las plataformas
 	for (int i = 0; i < 10; i++) {
 		platforms[i] = Box2DHelper::CreateRectangularDynamicBody(world, 13.5f, 5, 0.05f, 1.0f, 0.25f);
-		platforms[i]->SetGravityScale(0);
+		platforms[i]->SetGravityScale(1);
 	}
 }
 
@@ -71,6 +69,9 @@ void LevelManager::LoadLevel(int lvl) {
 		break;
 	case 5:
 		lvl_5();
+		break;
+	case 6:
+		lvl_6();
 		break;
 	}
 	
@@ -261,13 +262,45 @@ void LevelManager::lvl_5() {
 	r_joints[0] = Box2DHelper::CreateRevoluteJoint(world, st_Blocks[0], b2Vec2(50, 30), platforms[0], deg2rad(-60), deg2rad(60), 1, 10, false, true);
 
 	platforms[1]->SetTransform(b2Vec2(40, 50), 0);
-	r_joints[1] = Box2DHelper::CreateRevoluteJoint(world, st_Blocks[0], b2Vec2(40, 50), platforms[1], deg2rad(0), deg2rad(0), -3, 1000, true, false);
+	r_joints[1] = Box2DHelper::CreateRevoluteJoint(world, st_Blocks[0], b2Vec2(40, 50), platforms[1], deg2rad(0), deg2rad(0), -2, 200, true, false);
 
 	platforms[2]->SetTransform(b2Vec2(60, 50), 0);
-	r_joints[2] = Box2DHelper::CreateRevoluteJoint(world, st_Blocks[0], b2Vec2(60, 50), platforms[2], deg2rad(0), deg2rad(0), 3, 1000, true, false);
+	r_joints[2] = Box2DHelper::CreateRevoluteJoint(world, st_Blocks[0], b2Vec2(60, 50), platforms[2], deg2rad(0), deg2rad(0), 2, 200, true, false);
 
 	//Salida
 	spr_lvl_Exit.setPosition(Vector2f(50.0f, 90));
+}
+
+void LevelManager::lvl_6() {
+
+	PlaceBlock(b2Vec2(60, 50.5f), "St");
+	PlaceBlock(b2Vec2(65, 55.5f), "St");
+
+	//Left
+	PlaceLine(b2Vec2(50, 92), 6, "Up", "St");
+
+	platforms[0]->SetTransform(b2Vec2(53.0f, 61), 0);
+	p_joints[0] = Box2DHelper::CreatePrismaticJoint(world, platforms[0], platforms[0]->GetWorldCenter(), st_Blocks[0], b2Vec2(1, 0), -1, 2.5f, 5.0f, 50.0f, true, true);
+
+	platforms[1]->SetTransform(b2Vec2(66.0f, 61), 0);
+	p_joints[1] = Box2DHelper::CreatePrismaticJoint(world, platforms[1], platforms[1]->GetWorldCenter(), st_Blocks[0], b2Vec2(1, 0), -5, 10.0f, 2.0f, 50.0f, true, true);
+
+	PlaceLine(b2Vec2(50, 55.5f), 6, "Up", "St");
+
+	
+
+	//Right
+	PlaceLine(b2Vec2(70, 92), 6, "Up", "St");
+
+
+
+	PlaceLine(b2Vec2(70, 55.5f), 6, "Up", "St");
+
+	//Box2DHelper::CreatePulleyJoint(world, st_Blocks[0], st_Blocks[0]->GetWorldCenter(), b2Vec2(40, 40), di_Blocks[0], di_Blocks[0]->GetWorldCenter(), b2Vec2(60, 60), 1);
+	//Box2DHelper::CreatePrismaticJoint(world, st_Blocks[0], st_Blocks[0]->GetWorldCenter(), di_Blocks[0], b2Vec2(1, 0), 0.0f, 20, 2.0f, 2.0f, false, true);
+
+	//Salida
+	spr_lvl_Exit.setPosition(Vector2f(60, 90));
 }
 
 //					| AUX |
@@ -391,6 +424,7 @@ void LevelManager::PlaceBlock(b2Vec2 Pos, String block_Type) {
 	}
 	else if (block_Type == "di" || block_Type == "Di") {
 		di_Blocks[next_di]->SetTransform(Pos, 0);
+		di_Blocks[next_di]->SetGravityScale(di_Blocks_GravSc);
 	}
 
 }

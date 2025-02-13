@@ -26,6 +26,7 @@ public:
 	void lvl_3();
 	void lvl_4();
 	void lvl_5();
+	void lvl_6();
 
 	// Aux
 	void SetUpSprite(b2Body *body, Texture &txt, Sprite &spr);
@@ -40,7 +41,7 @@ public:
 private:
 
 	int current_lvl, last_lvl, next_st, next_di;
-	float di_Blocks_GravSc;
+	float di_Blocks_GravSc = 2.0f;
 
 	//
 	b2World *world;
@@ -48,6 +49,7 @@ private:
 	b2Body *di_Blocks[25];
 	b2DistanceJoint *d_joints[50];
 	b2RevoluteJoint *r_joints[10];
+	b2PrismaticJoint *p_joints[10];
 
 	b2Body *platforms[10];
 

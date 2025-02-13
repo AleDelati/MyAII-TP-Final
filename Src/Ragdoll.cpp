@@ -4,36 +4,36 @@ Ragdoll::Ragdoll(b2World *world, Vector2f pos, float angle) {
 	disabled = false;
 	// Crea los componentes del ragdoll
 	//Torso
-	Torso = Box2DHelper::CreateRectangularDynamicBody(world, 1, 2, 1, 1, 0.5);
+	Torso = Box2DHelper::CreateRectangularDynamicBody(world, 1, 2, 0.75f, 1, 0.5);
 	Torso->SetTransform(b2Vec2(pos.x, pos.y), deg2rad(angle));
 
 	//Cabeza
-	Head = Box2DHelper::CreateRectangularDynamicBody(world, 0.5, 0.5, 0.5f, 1, 0.5);
+	Head = Box2DHelper::CreateRectangularDynamicBody(world, 0.5, 0.5, 0.25f, 1, 0.5);
 	Head->SetTransform(Torso->GetWorldCenter() + b2Vec2(0, -1.35), Torso->GetAngle());
 	
 	//Brazo Izquierdo
-	LeftArm = Box2DHelper::CreateRectangularDynamicBody(world, .5, 0.3, 0.5f, 1, 0.5);
+	LeftArm = Box2DHelper::CreateRectangularDynamicBody(world, .5, 0.3, 0.15f, 1, 0.5);
 	LeftArm->SetTransform(Torso->GetWorldCenter() + b2Vec2(-0.87, -0.83), Torso->GetAngle());
 
-	LowLeftArm = Box2DHelper::CreateRectangularDynamicBody(world, .75, 0.3, 0.5f, 1, 0.5);
+	LowLeftArm = Box2DHelper::CreateRectangularDynamicBody(world, .75, 0.3, 0.10f, 1, 0.5);
 	LowLeftArm->SetTransform(Torso->GetWorldCenter() + b2Vec2(-1.6, -0.83), Torso->GetAngle());
 	//Brazo Derecho
-	RightArm = Box2DHelper::CreateRectangularDynamicBody(world, .5, 0.3, 1, 0.5f, 0.5);
+	RightArm = Box2DHelper::CreateRectangularDynamicBody(world, .5, 0.3, 0.15f, 0.5f, 0.5);
 	RightArm->SetTransform(Torso->GetWorldCenter() + b2Vec2(0.87, -0.83), Torso->GetAngle());
 
-	LowRightArm = Box2DHelper::CreateRectangularDynamicBody(world, .75, 0.3, 1, 0.5f, 0.5);
+	LowRightArm = Box2DHelper::CreateRectangularDynamicBody(world, .75, 0.3, 0.10f, 0.5f, 0.5);
 	LowRightArm->SetTransform(Torso->GetWorldCenter() + b2Vec2(1.6, -0.83), Torso->GetAngle());
 	//Pierna Izquierda
-	LeftLeg = Box2DHelper::CreateRectangularDynamicBody(world, 0.4, 1.5, 1, 0.5f, 0.5);
+	LeftLeg = Box2DHelper::CreateRectangularDynamicBody(world, 0.4, 1.5, 0.20f, 0.5f, 0.5);
 	LeftLeg->SetTransform(Torso->GetWorldCenter() + b2Vec2(-0.3, 1.85), Torso->GetAngle() + deg2rad(0));
 
-	LowLeftLeg = Box2DHelper::CreateRectangularDynamicBody(world, 0.4, 1.5, 1, 0.5f, 0.5);
+	LowLeftLeg = Box2DHelper::CreateRectangularDynamicBody(world, 0.4, 1.5, 0.10f, 0.5f, 0.5);
 	LowLeftLeg->SetTransform(Torso->GetWorldCenter() + b2Vec2(-0.3, 3.45), Torso->GetAngle() + deg2rad(0));
 	//Pierna Derecha
-	RightLeg = Box2DHelper::CreateRectangularDynamicBody(world, 0.4, 1.5, 1, 0.5f, 0.5);
+	RightLeg = Box2DHelper::CreateRectangularDynamicBody(world, 0.4, 1.5, 0.20f, 0.5f, 0.5);
 	RightLeg->SetTransform(Torso->GetWorldCenter() + b2Vec2(0.3, 1.85), Torso->GetAngle() + deg2rad(0));
 
-	LowRightLeg = Box2DHelper::CreateRectangularDynamicBody(world, 0.4, 1.5, 1, 0.5f, 0.5);
+	LowRightLeg = Box2DHelper::CreateRectangularDynamicBody(world, 0.4, 1.5, 0.10f, 0.5f, 0.5);
 	LowRightLeg->SetTransform(Torso->GetWorldCenter() + b2Vec2(0.3, 3.45), Torso->GetAngle() + deg2rad(0));
 
 	//Inicializa los Sprites
@@ -161,7 +161,7 @@ void Ragdoll::Draw(RenderWindow& wnd) {
 }
 
 void Ragdoll::ApplyForce(Vector2f mouse_p) {
-	Torso->ApplyForceToCenter(b2Vec2(mouse_p.x * 250, mouse_p.y * 250), false);
+	Torso->ApplyForceToCenter(b2Vec2(mouse_p.x * 150, mouse_p.y * 150), false);
 }
 
 void Ragdoll::Disable(Vector2f Pos) {
