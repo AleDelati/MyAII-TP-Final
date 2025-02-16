@@ -18,7 +18,8 @@ class Game {
 		RenderWindow *wnd;
 		Color clearColor;
 
-		bool pause, toggleZoom;
+		int gameState;
+		bool toggleZoom;
 		float fps, frameTime, time_2;
 		Clock* clock_1;
 		Time* time_1;
@@ -79,6 +80,7 @@ class Game {
 		void UpdateCanon();
 		void DoEvents();
 		void UpdateCamera();
+		void Debug();
 
 		//Aux
 		void SetUpSprite(b2Body *body, Texture &txt, Sprite &spr);

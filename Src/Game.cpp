@@ -1,10 +1,12 @@
 #include "Game.h"
 #include "Box2DHelper.h"
+#include "iostream"
 
 //					-| Constructores, destructores e inicializadores |-
 Game::Game(int ancho, int alto, std::string titulo) {
 	
-	pause = false, toggleZoom = false;
+	gameState = 2; // 0 = Pausado | 1 = Ejecucion | 2 = Menu de Inicio | 3 = Menu de Info | 4 = Victoria
+	toggleZoom = false;
 	fps = 60.0f; frameTime = 1.0f / fps;
 	clock_1 = new Clock; time_1 = new Time; 
 
@@ -81,6 +83,12 @@ void Game::InitSprites() {
 	txt_canon.loadFromFile("Sprites/Canon.png");
 	SetUpSprite(canon, txt_canon, spr_canon);
 
+	txt_canonBase.loadFromFile("Sprites/CanonBase.png");
+	spr_canonBase.setTexture(txt_canonBase);
+	spr_canonBase.setOrigin(txt_canonBase.getSize().x / 2, txt_canonBase.getSize().y / 2);
+	spr_canonBase.setScale(.125f, .125f);
+	spr_canonBase.setPosition(Vector2f(4.5f, 90.5f));
+
 }
 
 //					-| Main game loop |-
@@ -92,12 +100,15 @@ void Game::Loop() {
 		if (time_2 + frameTime < time_1->asSeconds()) {
 
 			wnd->clear(clearColor);
-			DoEvents();
 			UpdateCanon();
-			if(!pause){ UpdatePhysics(); }
-			CheckCollisions();
+			DoEvents();
+			if (gameState == 1) {
+				UpdatePhysics();
+				CheckCollisions();
+			}
 			UpdateCamera();
 			DrawGame();
+			//Debug();
 			wnd->display();
 
 		}
@@ -117,11 +128,16 @@ void Game::DrawGame() {
 	ui_Manager->Draw_Text(*wnd, lvl_Manager->GetCurrentLevel(), rag_Shot);
 
 	// Dibuja el Cañon
+	wnd->draw(spr_canonBase);
 	wnd->draw(spr_canon);
 	spr_canon.setRotation(rad2deg(canon->GetAngle()));
 
 	// Dibuja los Ragdolls
 	for (int i = 0; i < rag_ReadyToDraw; i++) { rag_i[i]->Draw(*wnd); }
+
+	// Dibuja el Menu y sus textos
+	ui_Manager->Draw_Menu(*wnd);
+	ui_Manager->Draw_MenuText(*wnd);
 
 }
 
@@ -145,9 +161,15 @@ void Game::CheckCollisions() {
 			if (clock_1->getElapsedTime().asSeconds() > ec_Cooldown) {  // Espera el retraso antes de pasar de nivel
 
 				if (ec_Ragdoll == ec_Ragdoll_Last) {
-					ResetRagdolls();
-					lvl_Manager->NextLevel();
-					ec_bool = false;
+					if (lvl_Manager->GetCurrentLevel() == 6) {
+						gameState = 4;
+						ui_Manager->UpdateGameState(gameState);
+					}
+					else {
+						ResetRagdolls();
+						lvl_Manager->NextLevel();
+						ec_bool = false;
+					}
 				}
 				else {
 					ec_bool = false;
@@ -163,13 +185,14 @@ void Game::UpdateCanon() {
 	mouse_Pos = Mouse::getPosition(*wnd);
 	mouse_PosCoord = wnd->mapPixelToCoords(mouse_Pos);
 
-	// Calcula el angulo de la posicion objetivo para rotar el cañon
-	float targetPos = atan2f(mouse_PosCoord.y - canon->GetPosition().y, mouse_PosCoord.x - canon->GetPosition().x);
-	// Rota el cañon en el angulo calculado solo si el angulo esta dentro del rango deseado ( de 0° a -90° )
-	if (rad2deg(targetPos) <= 0 && rad2deg(targetPos) >= -90) {
-		canon->SetTransform(canon->GetPosition(), targetPos);
+	if (gameState == 1) {
+		// Calcula el angulo de la posicion objetivo para rotar el cañon
+		float targetPos = atan2f(mouse_PosCoord.y - canon->GetPosition().y, mouse_PosCoord.x - canon->GetPosition().x);
+		// Rota el cañon en el angulo calculado solo si el angulo esta dentro del rango deseado ( de 0° a -90° )
+		if (rad2deg(targetPos) <= 0 && rad2deg(targetPos) >= -90) {
+			canon->SetTransform(canon->GetPosition(), targetPos);
+		}
 	}
-
 }
 
 void Game::DoEvents() {
@@ -181,7 +204,11 @@ void Game::DoEvents() {
 				break;
 
 			case Event::KeyPressed:				// Inputs del teclado
-				if (evt.key.code == Keyboard::Escape)	{ wnd->close(); }
+				if (evt.key.code == Keyboard::Escape) { // Menu y Pausa
+					if (gameState == 0) { gameState = 1; }
+					else if (gameState == 1) { gameState = 0; };
+					ui_Manager->UpdateGameState(gameState);
+				}
 				if (evt.key.code == Keyboard::F1)		{
 					// Activa|Desactiva la vista de Debug
 					if (debugRender->GetFlags() == UINT_MAX) { debugRender->SetFlags(0); }
@@ -190,16 +217,15 @@ void Game::DoEvents() {
 				if (evt.key.code == Keyboard::Z)		{
 					if (rag_Count > 0) { toggleZoom = !toggleZoom; }
 				}
-				if (evt.key.code == Keyboard::R)		{
+				if (evt.key.code == Keyboard::R && gameState == 1)		{
 					//Reinicio del nivel actual
 					lvl_Manager->ResetLevel();
 					ResetRagdolls();
 				}
-				if (evt.key.code == Keyboard::L) { lvl_Manager->NextLevel(); ResetRagdolls(); }
-				if (evt.key.code == Keyboard::Space)	{ pause = !pause; }
+				if (evt.key.code == Keyboard::L && gameState == 1) { lvl_Manager->NextLevel(); ResetRagdolls(); }
 
 			case Event::MouseButtonPressed:		// Inputs del mouse
-				if (evt.mouseButton.button == Mouse::Left && !toggleZoom) {
+				if (evt.mouseButton.button == Mouse::Left && !toggleZoom && gameState == 1) {
 
 					if (rag_Count >= 50) { rag_Count = 0; }
 					rag_Shot++;
@@ -227,9 +253,38 @@ void Game::DoEvents() {
 					}
 					
 				}
-				
-			case Event::MouseButtonReleased:
-				
+
+				// Menu de Inicio
+				if (evt.mouseButton.button == Mouse::Left && !toggleZoom && gameState == 2) {
+					if (mouse_PosCoord.x > 38 && mouse_PosCoord.x < 60 && mouse_PosCoord.y > 21 && mouse_PosCoord.y < 31) { gameState = 1; ui_Manager->UpdateGameState(gameState); }
+					if (mouse_PosCoord.x > 38 && mouse_PosCoord.x < 60 && mouse_PosCoord.y > 34 && mouse_PosCoord.y < 45) { gameState = 3; ui_Manager->UpdateGameState(gameState); }
+					if (mouse_PosCoord.x > 38 && mouse_PosCoord.x < 60 && mouse_PosCoord.y > 47 && mouse_PosCoord.y < 57) { wnd->close(); }
+				}
+
+				// Menu de pausa
+				if (evt.mouseButton.button == Mouse::Left && !toggleZoom && gameState == 0) {
+					if (mouse_PosCoord.x > 38 && mouse_PosCoord.x < 60 && mouse_PosCoord.y > 21 && mouse_PosCoord.y < 31) { gameState = 1; ui_Manager->UpdateGameState(gameState); }
+					if (mouse_PosCoord.x > 38 && mouse_PosCoord.x < 60 && mouse_PosCoord.y > 34 && mouse_PosCoord.y < 45) { gameState = 3; ui_Manager->UpdateGameState(gameState); }
+					if (mouse_PosCoord.x > 38 && mouse_PosCoord.x < 60 && mouse_PosCoord.y > 47 && mouse_PosCoord.y < 57) { wnd->close(); }
+				}
+
+				// Menu de Info
+				if (evt.mouseButton.button == Mouse::Left && !toggleZoom && gameState == 3) {
+					if (mouse_PosCoord.x > 38 && mouse_PosCoord.x < 60 && mouse_PosCoord.y > 66 && mouse_PosCoord.y < 78) { gameState = 0; ui_Manager->UpdateGameState(gameState); }
+				}
+
+				// Victoria
+				if (evt.mouseButton.button == Mouse::Left && !toggleZoom && gameState == 4) {
+					if (mouse_PosCoord.x > 24 && mouse_PosCoord.x < 46.5f && mouse_PosCoord.y > 50 && mouse_PosCoord.y < 60) {
+						ResetRagdolls();
+						lvl_Manager->NextLevel();
+						ec_bool = false;
+						gameState = 1;
+						ui_Manager->UpdateGameState(gameState);
+					}
+					if (mouse_PosCoord.x > 52 && mouse_PosCoord.x < 74 && mouse_PosCoord.y > 50 && mouse_PosCoord.y < 60) { wnd->close(); }
+				}
+
 				break;
 		}
 	}
@@ -247,6 +302,13 @@ void Game::UpdateCamera() {
 		UpdateCameraPos(b2Vec2(50.0f, 50.0f));
 	}
 	wnd->setView(camera);
+}
+
+void Game::Debug() {
+
+	std::cout << "Mouse coords" << " X " << mouse_PosCoord.x << " Y  " << mouse_PosCoord.y << std::endl;
+	std::cout << "Game State: " << gameState << std::endl;
+
 }
 
 //					-| Aux |-

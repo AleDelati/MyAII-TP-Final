@@ -273,8 +273,8 @@ void LevelManager::lvl_5() {
 
 void LevelManager::lvl_6() {
 
-	PlaceBlock(b2Vec2(60, 50.5f), "St");
-	PlaceBlock(b2Vec2(65, 55.5f), "St");
+	PlaceBlock(b2Vec2(60, 50.8f), "St");
+	PlaceBlock(b2Vec2(65, 55.8f), "St");
 
 	//Left
 	PlaceLine(b2Vec2(50, 92), 6, "Up", "St");
@@ -285,7 +285,7 @@ void LevelManager::lvl_6() {
 	platforms[1]->SetTransform(b2Vec2(66.0f, 61), 0);
 	p_joints[1] = Box2DHelper::CreatePrismaticJoint(world, platforms[1], platforms[1]->GetWorldCenter(), st_Blocks[0], b2Vec2(1, 0), -5, 10.0f, 2.0f, 50.0f, true, true);
 
-	PlaceLine(b2Vec2(50, 55.5f), 6, "Up", "St");
+	PlaceLine(b2Vec2(50, 55.8f), 6, "Up", "St");
 
 	
 
@@ -294,7 +294,7 @@ void LevelManager::lvl_6() {
 
 
 
-	PlaceLine(b2Vec2(70, 55.5f), 6, "Up", "St");
+	PlaceLine(b2Vec2(70, 55.8f), 6, "Up", "St");
 
 	//Box2DHelper::CreatePulleyJoint(world, st_Blocks[0], st_Blocks[0]->GetWorldCenter(), b2Vec2(40, 40), di_Blocks[0], di_Blocks[0]->GetWorldCenter(), b2Vec2(60, 60), 1);
 	//Box2DHelper::CreatePrismaticJoint(world, st_Blocks[0], st_Blocks[0]->GetWorldCenter(), di_Blocks[0], b2Vec2(1, 0), 0.0f, 20, 2.0f, 2.0f, false, true);
